@@ -1,0 +1,20 @@
+services:
+  ? crai-jaf-backend
+  : build:
+      context: .
+      target: production
+    image: crai-jaf-backend
+    container_name: crai-jaf-backend
+    depends_on:
+      - crai-jaf-backend-postgres
+    environment:
+      APPINSIGHTS_CLOUDROLE: crai-jaf-backend-local
+      APPINSIGHTS_CONNECTIONSTRING: ${APPINSIGHTS_CONNECTIONSTRING}
+
+
+  ? crai-jaf-backend-postgres
+  : image: postgres:15.6-alpine
+    environment:
+      POSTGRES_DB: crai-jaf-backend
+      POSTGRES_PASSWORD: ppp
+      POSTGRES_USERNAME: postgres

@@ -1,0 +1,36 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: crai-jaf-backend
+  description: Backend for JAF PoC
+  annotations:
+    github.com/project-slug: defra/crai-jaf-backend
+    dev.azure.com/project: DEFRA-AI
+    dev.azure.com/build-definition: crai-jaf-backend
+    sonarqube.org/project-key: crai-jaf-backend
+    grafana/dashboard-selector: "folderTitle == 'Managed Prometheus'"
+    backstage.io/kubernetes-id: crai-jaf-backend
+  links:
+    - url: https://github.com/defra/crai-jaf-backend
+      title: GitHub Repository
+      icon: github
+    - url: https://dev.azure.com/defragovuk/DEFRA-AI
+      title: Azure DevOps Project
+      icon: project
+    - url: https://sonarcloud.io/project/overview?id=crai-jaf-backend
+      title: SonarCloud Analysis
+      icon: check
+    - url: https://snyk.io/test/github/DEFRA/crai-jaf-backend
+      title: Snyk Analysis
+      icon: policy
+    - url: https://portal.azure.com/defradev.onmicrosoft.com
+      title: Azure Portal - Defra Dev
+      icon: cloud
+    - url: https://portal.azure.com/Defra.onmicrosoft.com
+      title: Azure Portal - Defra
+      icon: cloud
+spec:
+  type: backend
+  lifecycle: discovery
+  owner: group:default/crai-mcu
+  

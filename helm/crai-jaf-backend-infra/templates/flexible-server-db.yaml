@@ -1,0 +1,6 @@
+
+{{- include "adp-aso-helm-library.flexible-servers-db" (list . "crai-jaf-backend.flexible-servers-db") -}}
+
+{{- define "crai-jaf-backend.flexible-servers-db" }}
+{{ end -}}
+

@@ -1,0 +1,2 @@
+{{- define "crai-jaf-backend.container" -}}
+{{- end -}}

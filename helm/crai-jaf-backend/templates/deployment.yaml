@@ -1,0 +1,8 @@
+{{- include "adp-helm-library.deployment" (list . "crai-jaf-backend.deployment") -}}
+{{- define "crai-jaf-backend.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - {{ include "adp-helm-library.container" (list . "crai-jaf-backend.container") }}
+{{- end -}}
