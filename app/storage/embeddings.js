@@ -3,6 +3,7 @@ const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 
 const { getVectorStore } = require('../lib/vector-store')
 const { embeddings } = require('../config/embeddings')
+const { connection: knex } = require('../config/db')
 
 const splitDocuments = async (doc, jafName) => {
   const loader = new PDFLoader()
@@ -10,14 +11,14 @@ const splitDocuments = async (doc, jafName) => {
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 1000,
-    chunkOverlap: 200,
+    chunkOverlap: 120,
     separators: ['\n\n', '\n', ' ', '']
   })
 
   return splitter.splitDocuments(texts)
 }
 
-const getSimilarDocuments = async (doc, jafName) => {
+const getAllSimilarDocuments = async (doc, jafName) => {
   const splitTexts = await splitDocuments(doc, jafName)
   const vectorStore = await getVectorStore()
 
@@ -45,8 +46,38 @@ const getSimilarDocuments = async (doc, jafName) => {
   return chunks
 }
 
+const getSimilarDocuments = async (doc, jafName) => {
+  const splitTexts = await splitDocuments(doc, jafName)
+
+  const chunks = []
+
+  for (const text of splitTexts) {
+    try {
+      const embedDoc = await embeddings.embedQuery(text.pageContent)
+
+      const formattedEmbedDoc = JSON.stringify(embedDoc)
+
+      const docs = await knex('jaf_knowledge_vectors')
+        .select('id', 'content', 'metadata')
+        .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
+        .orderBy(knex.raw('?? <=> ?', ['vector', formattedEmbedDoc]))
+        .limit(5)
+
+      chunks.push({
+        text,
+        docs
+      })
+    } catch (err) {
+      console.error(err)
+      throw new Error('Error processing query: ', err)
+    }
+  }
+
+  return chunks
+}
+
 const saveEmbeddings = async (doc, jafName) => {
-  const splitTexts = splitDocuments(doc, jafName)
+  const splitTexts = await splitDocuments(doc, jafName)
 
   const vectorStore = await getVectorStore()
   await vectorStore.addDocuments(splitTexts)
@@ -54,5 +85,6 @@ const saveEmbeddings = async (doc, jafName) => {
 
 module.exports = {
   saveEmbeddings,
-  getSimilarDocuments
+  getSimilarDocuments,
+  getAllSimilarDocuments
 }

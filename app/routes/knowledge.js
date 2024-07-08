@@ -26,9 +26,9 @@ module.exports = [{
     const jafName = request.headers['x-jaf-name']
 
     try {
-      const id = await saveEmbeddings(document, jafName)
+      await saveEmbeddings(document, jafName)
 
-      return h.response({ id }).code(201)
+      return h.response('Uploaded successfully').code(201)
     } catch (err) {
       console.error(err)
       throw new Error('Error saving embeddings:', err)

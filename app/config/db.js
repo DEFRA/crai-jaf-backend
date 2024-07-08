@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const { DefaultAzureCredential } = require('@azure/identity')
+const knex = require('knex')
 
 const schema = Joi.object({
   postgresConnectionOptions: Joi.object({
@@ -53,6 +54,15 @@ const getConfig = async () => {
   return value
 }
 
+const connection = knex({
+  client: 'pg',
+  connection: async () => {
+    const { postgresConnectionOptions } = await getConfig()
+    return postgresConnectionOptions
+  }
+})
+
 module.exports = {
-  getConfig
+  getConfig,
+  connection
 }
