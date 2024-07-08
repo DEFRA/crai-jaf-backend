@@ -7,7 +7,7 @@ x-common-migration: &common-migration
 
 x-common-postgres: &common-postgres
   POSTGRES_PORT: 5432
-  POSTGRES_DB: ${POSTGRES_DB:-crai-jaf-backend}
+  POSTGRES_DB: ${POSTGRES_DB:-crai-jaf}
   POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:-ppp}
   POSTGRES_USERNAME: ${POSTGRES_ADMIN_USERNAME:-postgres}
 
@@ -36,8 +36,10 @@ services:
       - ./changelog:/liquibase/changelog
       - ./scripts:/scripts
 
-  ? crai-jaf-backend-postgres
-  : image: postgres:15.6-alpine
+  crai-jaf-backend-postgres:
+    build:
+      context: ./postgres
+    image: crai-jaf-backend-postgres
     environment: *common-postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
