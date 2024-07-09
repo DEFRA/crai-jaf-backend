@@ -26,8 +26,8 @@ module.exports = [{
 
     const jafName = request.headers['x-jaf-name']
 
-    const chunks = await getSimilarDocuments(document, jafName)
+    const { docs } = await getSimilarDocuments(document, jafName)
 
-    return h.response({ chunks }).code(200)
+    return h.response({ docs }).code(200)
   }
 }]
