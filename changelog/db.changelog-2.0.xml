@@ -1,16 +1,36 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
-    <changeSet author="Sebastian Horon" id="1">
-      <tagDatabase tag="v2.0.0" />
-    </changeSet>
-    <changeSet author="Sebastian Horon" id="3">
-        <createTable tableName="jaf_knowledge_vectors">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" />
-            </column>
-            <column name="content" type="text" />
-            <column name="metadata" type="jsonb" />
-            <column name="vector" type="vector" />
-        </createTable>
-    </changeSet>
+	<changeSet author="Sebastian Horon" id="1">
+		<tagDatabase tag="v2.0.0" />
+	</changeSet>
+	<changeSet author="Sebastian Horon" id="3">
+		<createTable tableName="jaf">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="name" type="varchar(255)">
+				<constraints nullable="false" unique="true" uniqueConstraintName="jaf_name_key" />
+			</column>
+			<column name="summary" type="jsonb">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+		<createTable tableName="jaf_vectors">
+			<column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="jaf_id" type="int">
+				<constraints nullable="false" foreignKeyName="jaf_vectors_jaf_id_fkey" references="jaf(id)" />
+			</column>
+			<column name="content" type="vector">
+				<constraints nullable="false" />
+			</column>
+			<column name="vector" type="vector">
+				<constraints nullable="false" />
+			</column>
+			<column name="metadata" type="jsonb">
+				<constraints nullable="false" />
+			</column>
+		</createTable>
+	</changeSet>
 </databaseChangeLog>

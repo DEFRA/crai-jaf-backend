@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { processPayloadFile } = require('../lib/process-payload-file')
-const { saveEmbeddings } = require('../storage/embeddings')
+const { storeJaf } = require('../services/jaf')
 
 module.exports = [{
   method: 'POST',
@@ -10,7 +10,9 @@ module.exports = [{
       parse: false,
       output: 'stream',
       allow: [
-        'application/pdf'
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
       ],
       maxBytes: 5 * 1000 * 1000
     },
@@ -21,14 +23,15 @@ module.exports = [{
     }
   },
   handler: async (request, h) => {
-    const document = await processPayloadFile(request.payload)
+    const jaf = await processPayloadFile(request.payload)
 
     const jafName = request.headers['x-jaf-name']
+    const contentType = request.headers['content-type']
 
     try {
-      await saveEmbeddings(document, jafName)
+      await storeJaf(jaf, jafName, contentType)
 
-      return h.response('Uploaded successfully').code(201)
+      return h.response().code(201)
     } catch (err) {
       console.error(err)
       throw new Error('Error saving embeddings:', err)
