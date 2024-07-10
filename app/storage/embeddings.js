@@ -5,13 +5,18 @@ const { getVectorStore } = require('../lib/vector-store')
 const { embeddings } = require('../config/embeddings')
 const { getSimilarJafs } = require('../repos/jaf-knowledge')
 
+const avg = (nums) => {
+  return nums.reduce((acc, curr) => acc + curr, 0) / nums.length
+}
+
 const splitDocuments = async (doc, jafName) => {
   const loader = new PDFLoader()
   const texts = await loader.parse(doc, { jafName })
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: 500,
-    chunkOverlap: 50
+    chunkOverlap: 50,
+    separators: ['\n\n', '\n', ' ', '']
   })
 
   return splitter.splitDocuments(texts)
@@ -43,7 +48,7 @@ const getJafRankings = async (doc, jafName) => {
     rankings.push({
       jafName: docName,
       scores,
-      avg: scores.reduce((acc, curr) => acc + curr, 0) / scores.length,
+      avg: avg(scores),
       total: scores.length
     })
   }

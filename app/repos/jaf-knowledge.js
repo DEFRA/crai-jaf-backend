@@ -10,7 +10,6 @@ const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
         similarity: knex.raw('1 - (vector <=> ?)', [formatted])
       })
       .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
-      // .andWhereRaw('(1 - (vector <=> ?)) >= 0.5', [formatted])
       .orderBy(knex.raw('1 - (vector <=> ?)', [formatted]), 'desc')
       .limit(maxJafs)
 
