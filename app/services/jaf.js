@@ -1,8 +1,10 @@
-const { readJaf } = require('../lib/document-loader')
 const { ChatPromptTemplate } = require('@langchain/core/prompts')
 const { JsonOutputParser } = require('@langchain/core/output_parsers')
+const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
+
 const { chat, embeddings } = require('./ai/clients/azure')
-const util = require('util')
+const { addJaf } = require('../repos/jaf-knowledge')
+const { readJaf } = require('../lib/document-loader')
 
 const prompt = `
 [INST]
@@ -133,7 +135,7 @@ const storeJaf = async (jaf, jafName, contentType) => {
   const chain = ChatPromptTemplate.fromTemplate(prompt)
     .pipe(chat)
     .pipe(new JsonOutputParser())
-  
+
   const summary = await chain.invoke({
     jaf: text
   })
@@ -145,15 +147,28 @@ const storeJaf = async (jaf, jafName, contentType) => {
   }
 
   for (const prop of embedProps) {
-    const embed = await embeddings.embedQuery(summary[prop])
+    const splitter = new RecursiveCharacterTextSplitter({
+      chunkSize: 50,
+      chunkOverlap: 5
+    })
+
+    const splitTexts = await splitter.splitText(summary[prop])
+
+    const embeddedChunks = []
+
+    for (const text of splitTexts) {
+      const embedded = await embeddings.embedQuery(text)
+      embeddedChunks.push({ embedded, text })
+    }
 
     processed.embeddings.push({
       prop,
-      embed
+      embeddedChunks
     })
   }
 
-  console.log(util.inspect(processed, { depth: null }))
+  await addJaf(processed)
+  return processed
 }
 
 module.exports = {

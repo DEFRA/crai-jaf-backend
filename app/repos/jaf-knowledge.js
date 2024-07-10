@@ -20,6 +20,39 @@ const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
   }
 }
 
+const addJaf = async (jaf) => {
+  const trx = await knex.transaction()
+  try {
+    const record = await trx('jaf')
+      .returning('id')
+      .insert({
+        name: jaf.jafName,
+        summary: jaf.summary
+      })
+
+    const { id } = record[0]
+
+    for (const embedding of jaf.embeddings) {
+      for (const chunk of embedding.embeddedChunks) {
+        await trx('jaf_vectors').insert({
+          jaf_id: id,
+          content: chunk.text,
+          vector: JSON.stringify(chunk.embedded),
+          metadata: {
+            section: embedding.prop
+          }
+        })
+      }
+    }
+
+    await trx.commit()
+  } catch (err) {
+    await trx.rollback()
+    throw err
+  }
+}
+
 module.exports = {
-  getSimilarJafs
+  getSimilarJafs,
+  addJaf
 }

@@ -29,9 +29,9 @@ module.exports = [{
     const contentType = request.headers['content-type']
 
     try {
-      await storeJaf(jaf, jafName, contentType)
+      const { summary } = await storeJaf(jaf, jafName, contentType)
 
-      return h.response().code(201)
+      return h.response({ summary }).code(201)
     } catch (err) {
       console.error(err)
       throw new Error('Error saving embeddings:', err)

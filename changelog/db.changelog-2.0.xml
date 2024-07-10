@@ -22,7 +22,7 @@
 			<column name="jaf_id" type="int">
 				<constraints nullable="false" foreignKeyName="jaf_vectors_jaf_id_fkey" references="jaf(id)" />
 			</column>
-			<column name="content" type="vector">
+			<column name="content" type="text">
 				<constraints nullable="false" />
 			</column>
 			<column name="vector" type="vector">

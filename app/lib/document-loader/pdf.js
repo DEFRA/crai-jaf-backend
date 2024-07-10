@@ -1,4 +1,4 @@
-const { PDFLoader } = require('langchain/document_loaders/fs/pdf')
+const { PDFLoader } = require('@langchain/community/document_loaders/fs/pdf')
 
 const load = async (document) => {
   const loader = new PDFLoader()
