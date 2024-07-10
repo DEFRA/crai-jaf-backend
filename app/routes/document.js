@@ -1,7 +1,7 @@
 const Joi = require('joi')
 
 const { processPayloadFile } = require('../lib/process-payload-file')
-const { getSimilarDocuments } = require('../storage/embeddings')
+const { getJafRankings } = require('../storage/embeddings')
 
 module.exports = [{
   method: 'POST',
@@ -26,7 +26,7 @@ module.exports = [{
 
     const jafName = request.headers['x-jaf-name']
 
-    const rankings = await getSimilarDocuments(document, jafName)
+    const rankings = await getJafRankings(document, jafName)
 
     return h.response({ rankings }).code(200)
   }

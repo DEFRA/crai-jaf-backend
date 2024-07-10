@@ -7,13 +7,13 @@ const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
     const jafs = await knex('jaf_knowledge_vectors')
       .select({
         jafName: knex.raw('metadata->>\'jafName\''),
-        simularity: knex.raw('1 - (vector <=> ?)', [formatted])
+        similarity: knex.raw('1 - (vector <=> ?)', [formatted])
       })
       .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
-      .andWhereRaw('(1 - (vector <=> ?)) > 0.5', [formatted])
-      .orderBy('similarity', 'desc')
+      // .andWhereRaw('(1 - (vector <=> ?)) >= 0.5', [formatted])
+      .orderBy(knex.raw('1 - (vector <=> ?)', [formatted]), 'desc')
       .limit(maxJafs)
-  
+
     return jafs
   } catch (err) {
     console.error(err)

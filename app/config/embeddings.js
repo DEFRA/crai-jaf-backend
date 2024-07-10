@@ -14,6 +14,8 @@ const embeddings = new OpenAIEmbeddings({
   onFailedAttempt
 })
 
+console.log(process.env.AZURE_OPENAI_INSTANCE_NAME)
+
 module.exports = {
   embeddings
 }

@@ -10,40 +10,11 @@ const splitDocuments = async (doc, jafName) => {
   const texts = await loader.parse(doc, { jafName })
 
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 10000,
-    chunkOverlap: 100,
-    separators: ['\n\n', '\n', ' ', '']
+    chunkSize: 500,
+    chunkOverlap: 50
   })
 
   return splitter.splitDocuments(texts)
-}
-
-const getAllSimilarDocuments = async (doc, jafName) => {
-  const splitTexts = await splitDocuments(doc, jafName)
-  const vectorStore = await getVectorStore()
-
-  const chunks = []
-
-  for (const text of splitTexts) {
-    try {
-      const embedDoc = await embeddings.embedQuery(text.pageContent)
-      const docs = await vectorStore.similaritySearchVectorWithScore(embedDoc, 2)
-
-      for (const [doc] of docs) {
-        console.log(doc.metadata.jafName)
-      }
-
-      chunks.push({
-        text,
-        docs
-      })
-    } catch (err) {
-      console.error(err)
-      throw new Error('Error processing query: ', err)
-    }
-  }
-
-  return chunks
 }
 
 const getJafRankings = async (doc, jafName) => {
@@ -54,16 +25,14 @@ const getJafRankings = async (doc, jafName) => {
   for (const text of splitTexts) {
     const jafEmbeddings = await embeddings.embedQuery(text.pageContent)
 
-    const formattedEmbeddings = JSON.stringify(jafEmbeddings)
+    const matched = await getSimilarJafs(jafName, jafEmbeddings, 3)
 
-    const matched = await getSimilarJafs(jafName, formattedEmbeddings, 3)
-    
     for (const match of matched) {
       const docName = match.jafName
       const ratings = matchMap.get(docName) ?? []
 
       ratings.push(match.similarity)
-      
+
       matchMap.set(docName, ratings)
     }
   }
@@ -79,7 +48,7 @@ const getJafRankings = async (doc, jafName) => {
     })
   }
 
-  return rankings
+  return rankings.sort((a, b) => b.avg - a.avg)
 }
 
 const saveEmbeddings = async (doc, jafName) => {
@@ -91,6 +60,5 @@ const saveEmbeddings = async (doc, jafName) => {
 
 module.exports = {
   saveEmbeddings,
-  getJafRankings,
-  getAllSimilarDocuments
+  getJafRankings
 }
