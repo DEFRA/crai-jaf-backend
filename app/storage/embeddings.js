@@ -3,7 +3,7 @@ const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 
 const { getVectorStore } = require('../lib/vector-store')
 const { embeddings } = require('../config/embeddings')
-const { connection: knex } = require('../config/db')
+const { getSimilarJafs } = require('../repos/jaf-knowledge')
 
 const splitDocuments = async (doc, jafName) => {
   const loader = new PDFLoader()
@@ -46,44 +46,40 @@ const getAllSimilarDocuments = async (doc, jafName) => {
   return chunks
 }
 
-const getSimilarDocuments = async (doc, jafName) => {
+const getJafRankings = async (doc, jafName) => {
   const splitTexts = await splitDocuments(doc, jafName)
 
-  const chunks = []
-
-  const scoreMap = new Map()
+  const matchMap = new Map()
 
   for (const text of splitTexts) {
-    try {
-      const embedDoc = await embeddings.embedQuery(text.pageContent)
+    const jafEmbeddings = await embeddings.embedQuery(text.pageContent)
 
-      const formattedEmbedDoc = JSON.stringify(embedDoc)
+    const formattedEmbeddings = JSON.stringify(jafEmbeddings)
 
-      const docs = await knex('jaf_knowledge_vectors')
-        .select({
-          jafName: knex.raw('metadata->>\'jafName\''),
-          score: knex.raw('1 - (vector <=> ?)', [formattedEmbedDoc])
-        })
-        .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
-        .orderBy(knex.raw('1 - (vector <=> ?)', [formattedEmbedDoc]))
-        .limit(3)
-      for (const doc of docs) {
-        const docName = doc.jafName
-        const scores = scoreMap.get(docName) ?? []
-        scores.push(doc.score)
-        scoreMap.set(docName, scores)
-      }
-    } catch (err) {
-      console.error(err)
-      throw new Error('Error processing query: ', err)
+    const matched = await getSimilarJafs(jafName, formattedEmbeddings, 3)
+    
+    for (const match of matched) {
+      const docName = match.jafName
+      const ratings = matchMap.get(docName) ?? []
+
+      ratings.push(match.similarity)
+      
+      matchMap.set(docName, ratings)
     }
   }
 
-  for (const [key, value] of scoreMap.entries()) {
-    console.log(key, value)
+  const rankings = []
+
+  for (const [docName, scores] of matchMap.entries()) {
+    rankings.push({
+      jafName: docName,
+      scores,
+      avg: scores.reduce((acc, curr) => acc + curr, 0) / scores.length,
+      total: scores.length
+    })
   }
 
-  return chunks
+  return rankings
 }
 
 const saveEmbeddings = async (doc, jafName) => {
@@ -95,6 +91,6 @@ const saveEmbeddings = async (doc, jafName) => {
 
 module.exports = {
   saveEmbeddings,
-  getSimilarDocuments,
+  getJafRankings,
   getAllSimilarDocuments
 }

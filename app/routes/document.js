@@ -26,8 +26,8 @@ module.exports = [{
 
     const jafName = request.headers['x-jaf-name']
 
-    const { docs } = await getSimilarDocuments(document, jafName)
+    const rankings = await getSimilarDocuments(document, jafName)
 
-    return h.response({ docs }).code(200)
+    return h.response({ rankings }).code(200)
   }
 }]

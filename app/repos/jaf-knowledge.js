@@ -1,0 +1,26 @@
+const { connection: knex } = require('../config/db')
+
+const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
+  const formatted = JSON.stringify(embeddings)
+
+  try {
+    const jafs = await knex('jaf_knowledge_vectors')
+      .select({
+        jafName: knex.raw('metadata->>\'jafName\''),
+        simularity: knex.raw('1 - (vector <=> ?)', [formatted])
+      })
+      .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
+      .andWhereRaw('(1 - (vector <=> ?)) > 0.5', [formatted])
+      .orderBy('similarity', 'desc')
+      .limit(maxJafs)
+  
+    return jafs
+  } catch (err) {
+    console.error(err)
+    throw new Error('Error processing query: ', err)
+  }
+}
+
+module.exports = {
+  getSimilarJafs
+}
