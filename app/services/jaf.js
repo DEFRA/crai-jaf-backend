@@ -3,7 +3,7 @@ const { JsonOutputParser } = require('@langchain/core/output_parsers')
 const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 
 const { chat, embeddings } = require('./ai/clients/azure')
-const { addJaf, getJaf } = require('../repos/jaf')
+const { addJaf } = require('../repos/jaf')
 const { readJaf } = require('../lib/document-loader')
 
 const prompt = `

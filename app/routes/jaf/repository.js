@@ -1,4 +1,3 @@
-const Joi = require('joi')
 const { processPayloadFile } = require('../../lib/process-payload-file')
 const { storeJaf } = require('../../services/jaf')
 
