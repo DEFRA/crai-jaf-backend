@@ -22,6 +22,7 @@ const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
 
 const addJaf = async (jaf) => {
   const trx = await knex.transaction()
+
   try {
     const record = await trx('jaf')
       .returning('id')
@@ -48,11 +49,29 @@ const addJaf = async (jaf) => {
     await trx.commit()
   } catch (err) {
     await trx.rollback()
+
+    console.error('Error adding JAF: ', err)
+
     throw err
+  }
+}
+
+const getJaf = async (jafName) => {
+  try {
+    const jaf = await knex('jaf')
+      .select('*')
+      .leftJoin('jaf_vectors', 'jaf.id', 'jaf_vectors.jaf_id')
+      .where('name', jafName)
+
+    return jaf[0]
+  } catch (err) {
+    console.error(err)
+    throw new Error('Error getting JAF: ', err)
   }
 }
 
 module.exports = {
   getSimilarJafs,
-  addJaf
+  addJaf,
+  getJaf
 }

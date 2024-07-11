@@ -3,7 +3,7 @@ const { JsonOutputParser } = require('@langchain/core/output_parsers')
 const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 
 const { chat, embeddings } = require('./ai/clients/azure')
-const { addJaf } = require('../repos/jaf-knowledge')
+const { addJaf, getJaf } = require('../repos/jaf')
 const { readJaf } = require('../lib/document-loader')
 
 const prompt = `
@@ -32,7 +32,8 @@ Extract the job summary from the [JAF] and return a JSON object corresponding to
         "business_unit": {{
           "type": "string",
           "description": "The business unit of the job referenced in the JAF"
-        }}
+        }},
+        required: ["job_title", "grade", "business_unit"]
       }}
     }},
     "summary": {{
@@ -129,7 +130,7 @@ Extract the job summary from the [JAF] and return a JSON object corresponding to
 
 const embedProps = ['summary']
 
-const storeJaf = async (jaf, jafName, contentType) => {
+const storeJaf = async (jaf, contentType) => {
   const text = await readJaf(jaf, contentType)
 
   const chain = ChatPromptTemplate.fromTemplate(prompt)
@@ -139,6 +140,8 @@ const storeJaf = async (jaf, jafName, contentType) => {
   const summary = await chain.invoke({
     jaf: text
   })
+
+  const jafName = `${summary.details.grade} - ${summary.details.job_title}`
 
   const processed = {
     jafName,
@@ -168,6 +171,7 @@ const storeJaf = async (jaf, jafName, contentType) => {
   }
 
   await addJaf(processed)
+
   return processed
 }
 
