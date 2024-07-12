@@ -61,7 +61,7 @@ const getJafs = async (query) => {
       .select('name', 'summary')
     
     if (query.jafName) {
-      jafs.where('name', 'like', `${query.jafName}`)
+      jafs.where('name', `${query.jafName}`)
     }
 
     return jafs
