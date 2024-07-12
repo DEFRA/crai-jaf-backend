@@ -10,7 +10,7 @@ const prompt = `
 [INST]
 You are a resourcing manager who is reviewing a Job Analysis Form (JAF) for a role in your organization.
 
-Extract the job summary from the [JAF] and return a JSON object corresponding to JSON schema in [SCHEMA].
+Extract the job summary from the [JAF] and return only a JSON object corresponding to JSON schema in [SCHEMA].
 [/INST]
 
 [SCHEMA]
