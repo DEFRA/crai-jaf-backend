@@ -15,7 +15,6 @@ const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
 
     return jafs
   } catch (err) {
-    console.error(err)
     throw new Error('Error processing query: ', err)
   }
 }
@@ -50,28 +49,29 @@ const addJaf = async (jaf) => {
   } catch (err) {
     await trx.rollback()
 
-    console.error('Error adding JAF: ', err)
+    err.type = 'JAF_EXISTS'
 
     throw err
   }
 }
 
-const getJaf = async (jafName) => {
+const getJafs = async (query) => {
   try {
-    const jaf = await knex('jaf')
-      .select('*')
-      .leftJoin('jaf_vectors', 'jaf.id', 'jaf_vectors.jaf_id')
-      .where('name', jafName)
+    const jafs = knex('jaf')
+      .select('name', 'summary')
+    
+    if (query.jafName) {
+      jafs.where('name', 'like', `${query.jafName}`)
+    }
 
-    return jaf[0]
+    return jafs
   } catch (err) {
-    console.error(err)
-    throw new Error('Error getting JAF: ', err)
+    throw new Error('Error getting JAFs: ', err)
   }
 }
 
 module.exports = {
   getSimilarJafs,
   addJaf,
-  getJaf
+  getJafs
 }
