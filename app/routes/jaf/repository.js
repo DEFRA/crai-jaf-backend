@@ -1,5 +1,5 @@
 const { processPayloadFile } = require('../../lib/process-payload-file')
-const { getJafs } = require('../../repos/jaf')
+const { getJafs, getJafById } = require('../../repos/jaf')
 const { storeJaf } = require('../../services/jaf')
 
 module.exports = [
@@ -14,6 +14,25 @@ module.exports = [
       }
 
       return h.response(jafs).code(200)
+    }
+  },
+  {
+    method: 'GET',
+    path: '/jaf/repository/{id}',
+    handler: async (request, h) => {
+      try {
+        const { id } = request.params
+
+        const jaf = await getJafById(id)
+
+        return h.response(jaf).code(200)
+      } catch (err) {
+        if (err.message === 'NOT_FOUND') {
+          return h.response().code(404)
+        }
+
+        throw err
+      }
     }
   },
   {

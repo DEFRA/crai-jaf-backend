@@ -58,7 +58,7 @@ const addJaf = async (jaf) => {
 const getJafs = async (query) => {
   try {
     const jafs = knex('jaf')
-      .select('name', 'summary')
+      .select('id', 'name', 'summary')
     
     if (query.jafName) {
       jafs.where('name', `${query.jafName}`)
@@ -70,8 +70,29 @@ const getJafs = async (query) => {
   }
 }
 
+const getJafById = async (id) => {
+  try {
+    const jaf = knex('jaf')
+      .select('id', 'name', 'summary')
+      .where('id', id)
+    
+    if (!jaf) {
+      const err = new Error(`JAF with id '${id}' not found`)
+
+      err.type = 'NOT_FOUND'
+
+      throw err
+    }
+    
+    return jaf
+  } catch (err) {
+    throw new Error('Error getting JAF: ', err)
+  }
+}
+
 module.exports = {
   getSimilarJafs,
   addJaf,
-  getJafs
+  getJafs,
+  getJafById
 }
