@@ -1,71 +1,104 @@
-openapi: "3.0.3"
+openapi: '3.0.3'
 info:
-  version: "1.0.0"
-  title: "crai-jaf-backend"
+  version: '1.0.0'
+  title: 'crai-jaf-backend'
 paths:
   /jaf/repository:
     get:
       tags: 
-        - "JAF Repository"
-      summary: "Get all JAFs stored in the repository"
+        - 'JAF Repository'
+      summary: 'Get all JAFs stored in the repository'
       parameters:
-        - name: "jafName"
-          in: "query"
-          description: "The name of the JAF to search for"
+        - name: jafName
+          in: query
+          description: 'The name of the JAF to search for'
           required: false
           schema:
-            type: "string"
+            type: string
       responses:
         '200':
-          description: "JAFs retrieved successfully"
+          description: 'JAFs retrieved successfully'
           content:
             application/json:
               schema:
-                type: "array"
+                type: array
                 items:
-                  type: "object"
+                  type: object
                   properties:
                     id:
-                      type: "integer"
-                      description: "The id of the JAF"
+                      type: integer
+                      description: 'The id of the JAF'
                       example: 1
                     name:
-                      type: "string"
-                      description: "The name of the JAF"
-                      example: "G7 Lead Developer"
+                      type: string
+                      description: 'The name of the JAF'
+                      example: 'G7 Lead Developer'
                     summary:
-                      type: "object"
-                      $ref: "#/components/schemas/JafSummary"
+                      type: object
+                      $ref: '#/components/schemas/JafSummary'
         '204':
-          description: "No JAFs found in the repository"
+          description: 'No JAFs found in the repository'
     post:
       tags: 
-        - "JAF Repository"
-      summary: "Store a JAF in the repository"
+        - 'JAF Repository'
+      summary: 'Store a JAF in the repository'
       requestBody:
         content:
           application/octet-stream:
             schema:
-              type: "string"
-              format: "binary"
+              type: string
+              format: binary
       responses:
         '201':
-          description: "JAF stored successfully"
+          description: 'JAF stored successfully'
           content:
             application/json:
               schema:
-                type: "object"
+                type: object
                 properties:
                   message:
-                    type: "string"
-                    description: "The message returned by the server"
-                    example: "JAF stored successfully"
+                    type: string
+                    description: 'The message returned by the server'
+                    example: 'JAF stored successfully'
                   id:
-                    type: "integer"
-                    description: "The id of the created JAF"
+                    type: integer
+                    description: 'The id of the created JAF'
                     example: 1
         '409':
-          description: "JAF already exists in the repository"
+          description: 'JAF already exists in the repository'
+  /jaf/repository/{id}:
+    get:
+      tags:
+        - 'JAF Repository'
+      summary: 'Get the JAF with id: {id}'
+      parameters:
+        - name: id
+          in: path
+          description: 'The id of the JAF to retrieve'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'JAF retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 'The id of the JAF'
+                    example: 1
+                  name:
+                    type: string
+                    description: 'The name of the JAF'
+                    example: 'G7 Lead Developer'
+                  summary:
+                    type: object
+                    $ref: '#/components/schemas/JafSummary'
+        '404':
+          description: 'No JAF found with id: {id}'
 
 components:
   schemas:
