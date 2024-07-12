@@ -1,0 +1,30 @@
+openapi: "3.0.3"
+info:
+  version: "1.0.0"
+  title: "crai-jaf-backend"
+paths:
+  /jaf/repository:
+    get:
+      tags: 
+        - "JAF Repository"
+      summary: "Get all JAFs stored in the repository"
+      parameters:
+        - name: "jafName"
+          in: "query"
+          description: "The name of the JAF to search for"
+          required: false
+          schema:
+            type: "string"
+    post:
+      tags: 
+        - "JAF Repository"
+      summary: "Store a JAF in the repository"
+      application/octet-stream:
+        schema:
+          type: "string"
+          format: "binary"
+      responses:
+        '201':
+          description: "JAF stored successfully"
+        '409':
+          description: "JAF already exists in the repository"
