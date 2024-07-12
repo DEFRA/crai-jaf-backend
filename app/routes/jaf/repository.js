@@ -27,7 +27,7 @@ module.exports = [
 
         return h.response(jaf).code(200)
       } catch (err) {
-        if (err.message === 'NOT_FOUND') {
+        if (err.type === 'NOT_FOUND') {
           return h.response().code(404)
         }
 

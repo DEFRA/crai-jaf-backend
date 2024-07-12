@@ -59,7 +59,7 @@ const getJafs = async (query) => {
   try {
     const jafs = knex('jaf')
       .select('id', 'name', 'summary')
-    
+
     if (query.jafName) {
       jafs.where('name', `${query.jafName}`)
     }
@@ -71,23 +71,25 @@ const getJafs = async (query) => {
 }
 
 const getJafById = async (id) => {
+  let jaf
+
   try {
-    const jaf = knex('jaf')
+    jaf = await knex('jaf')
       .select('id', 'name', 'summary')
       .where('id', id)
-    
-    if (!jaf) {
-      const err = new Error(`JAF with id '${id}' not found`)
-
-      err.type = 'NOT_FOUND'
-
-      throw err
-    }
-    
-    return jaf
   } catch (err) {
     throw new Error('Error getting JAF: ', err)
   }
+
+  if (jaf.length === 0) {
+    const err = new Error(`Error getting JAF: '${id}' not found`)
+
+    err.type = 'NOT_FOUND'
+
+    throw err
+  }
+
+  return jaf
 }
 
 module.exports = {
