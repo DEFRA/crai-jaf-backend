@@ -1,3 +1,5 @@
+jest.mock('../../app/routes/jaf/repository', () => {})
+
 jest.mock('../../app/insights', () => {
   return {
     setup: jest.fn()

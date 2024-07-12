@@ -1,4 +1,4 @@
 networks:
   default:
     external:
-      name: crai-mcu
+      name: crai-jaf

@@ -1,0 +1,196 @@
+openapi: '3.0.3'
+info:
+  version: '1.0.0'
+  title: 'crai-jaf-backend'
+paths:
+  /jaf/repository:
+    get:
+      tags: 
+        - 'JAF Repository'
+      summary: 'Get all JAFs stored in the repository'
+      parameters:
+        - name: jafName
+          in: query
+          description: 'The name of the JAF to search for'
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'JAFs retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: 'The id of the JAF'
+                      example: 1
+                    name:
+                      type: string
+                      description: 'The name of the JAF'
+                      example: 'G7 Lead Developer'
+                    summary:
+                      type: object
+                      $ref: '#/components/schemas/JafSummary'
+        '204':
+          description: 'No JAFs found in the repository'
+    post:
+      tags: 
+        - 'JAF Repository'
+      summary: 'Store a JAF in the repository'
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: 'JAF stored successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 'The message returned by the server'
+                    example: 'JAF stored successfully'
+                  id:
+                    type: integer
+                    description: 'The id of the created JAF'
+                    example: 1
+        '409':
+          description: 'JAF already exists in the repository'
+  /jaf/repository/{id}:
+    get:
+      tags:
+        - 'JAF Repository'
+      summary: 'Get the JAF with id: {id}'
+      parameters:
+        - name: id
+          in: path
+          description: 'The id of the JAF to retrieve'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'JAF retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: 'The id of the JAF'
+                    example: 1
+                  name:
+                    type: string
+                    description: 'The name of the JAF'
+                    example: 'G7 Lead Developer'
+                  summary:
+                    type: object
+                    $ref: '#/components/schemas/JafSummary'
+        '404':
+          description: 'No JAF found with id: {id}'
+
+components:
+  schemas:
+    JafSummary:
+      type: object
+      properties:
+        details:
+          type: object
+          properties:
+            job_title:
+              type: string
+              description: The title of the job referenced in the JAF
+            grade:
+              type: string
+              enum: [AO, EO, HEO, SEO, G7, G6]
+              description: The grade of the job referenced in the JAF
+            business_unit:
+              type: string
+              description: The business unit of the job referenced in the JAF
+          required:
+            - job_title
+            - grade
+            - business_unit
+        summary:
+          type: string
+          description: The job summary from the JAF
+        key_responsibilities:
+          type: array
+          items:
+            type: string
+          description: The key responsibilities of the job referenced in the JAF
+        deliverables:
+          type: array
+          items:
+            type: string
+          description: The deliverables of the job referenced in the JAF
+        main_activities:
+          type: array
+          items:
+            type: object
+            properties:
+              activity:
+                type: string
+              time_percentage:
+                type: string
+          description: The main activities of the job referenced in the JAF
+        knowledge:
+          type: object
+          properties:
+            qualifications:
+              type: array
+              items:
+                type: string
+              description: The qualifications required from the qualifications section of the JAF.
+            skills:
+              type: array
+              items:
+                type: string
+              description: The skills required for the job referenced in the JAF. This may include DDaT skills.
+            experience:
+              type: array
+              items:
+                type: string
+              description: The work / previous project experience required for the job referenced in the JAF.
+          required:
+            - qualifications
+            - skills
+            - experience
+        contacts:
+          type: array
+          items:
+            type: object
+            properties:
+              level:
+                type: string
+                description: The level / job role of the contact
+              purpose:
+                type: string
+                description: The purpose of working with the contact
+              frequency:
+                type: string
+                description: How often the profession will work with the contact
+              type:
+                type: string
+                description: The type of contact
+                enum: [organisation, ogd, third-party]
+          description: Contacts which are typically required in order to carry out the responsibilities of the role
+      required:
+        - details
+        - summary
+        - key_responsibilities
+        - deliverables
+        - main_activities
+        - knowledge
+        - contacts
