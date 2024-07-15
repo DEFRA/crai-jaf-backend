@@ -8,8 +8,6 @@ const getSimilarJafs = async (jaf) => {
 
     const formatted = JSON.stringify(embedded)
 
-    console.log('formatted', formatted)
-
     const jafs = await knex('jaf_vectors')
       .innerJoin('jaf', 'jaf.id', 'jaf_vectors.jaf_id')
       .select({
