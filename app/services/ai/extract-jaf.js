@@ -162,7 +162,9 @@ const extractJaf = async (jaf, contentType, options) => {
   }
 
   for (const prop of embedProps) {
-    const chunks = chunk ? splitText(summary[prop]) : [summary[prop]]
+    const chunks = chunk ? await splitText(summary[prop]) : [summary[prop]]
+
+    console.log(chunks)
 
     const embeddedChunks = []
 
