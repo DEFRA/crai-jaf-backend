@@ -2,8 +2,8 @@
 # to provide dependencies and expose ports for local testing
 
 services:
-  ? crai-jaf-backend
-  : build:
+  crai-jaf-backend:
+    build:
       target: development
     image: crai-jaf-backend-development
     container_name: crai-jaf-backend-development
@@ -16,9 +16,8 @@ services:
       - ./scripts:/home/node/scripts
       - ./package.json:/home/node/package.json
       
-
-  ? crai-jaf-backend-postgres
-  : ports:
+  crai-jaf-backend-postgres:
+    ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data

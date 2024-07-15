@@ -1,21 +1,28 @@
 const { connection: knex } = require('../config/db')
 
-const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
-  const formatted = JSON.stringify(embeddings)
-
+const getSimilarJafs = async (jaf) => {
   try {
-    const jafs = await knex('jaf_knowledge_vectors')
+    const propEmbedding = jaf.embeddings.find(embedding => embedding.prop === 'summary')
+
+    const { embedded } = propEmbedding.embeddedChunks[0]
+
+    const formatted = JSON.stringify(embedded)
+
+    console.log('formatted', formatted)
+
+    const jafs = await knex('jaf_vectors')
+      .innerJoin('jaf', 'jaf.id', 'jaf_vectors.jaf_id')
       .select({
-        jafName: knex.raw('metadata->>\'jafName\''),
-        similarity: knex.raw('1 - (vector <=> ?)', [formatted])
+        jafName: 'jaf.name',
+        cosine: knex.raw('AVG(1 - ("jaf_vectors"."vector" <=> ?))', [formatted])
       })
-      .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
-      .orderBy(knex.raw('1 - (vector <=> ?)', [formatted]), 'desc')
-      .limit(maxJafs)
+      .whereNot('jaf.name', jaf.jafName)
+      .groupBy('jafName')
+      .orderBy('cosine', 'desc')
 
     return jafs
   } catch (err) {
-    throw new Error('Error processing query: ', err)
+    throw new Error('Error getting similar JAFs: ', err)
   }
 }
 
