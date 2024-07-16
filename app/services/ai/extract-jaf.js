@@ -7,13 +7,16 @@ const { readJaf } = require('../../lib/document-loader')
 
 const prompt = `
 [INST]
-You are a resourcing manager who is reviewing a Job Analysis Form (JAF) for a role in your organization.
+You are an expert at extracting information from documents.
 
-Extract the text from the [JAF] and return only a JSON object corresponding to JSON schema in [SCHEMA].
+You will be provided with [JAF], a Job Analysis Form.
 
-You must be as detailed as possible in your extraction, as the information will be used to compare the JAF with other JAFs in the system. Do not summarise unless specified in [SCHEMA].
-
+Your task is to extract all information from the [JAF] and return a JSON object with the information, strictly adhering to the JSON schema in [SCHEMA].
+You must be as detailed as possible in your extraction.
+Do not summarise anything, unless specified in [SCHEMA].
 For example, when extracting the 'Job Summary' from the JAF, you should extract the full text of the job summary section, not a summary of the job summary.
+
+Return only the JSON object. Do not include anything else.
 [/INST]
 
 [SCHEMA]
@@ -92,7 +95,7 @@ For example, when extracting the 'Job Summary' from the JAF, you should extract 
         "items": {{
           "type": "string"
         }},
-        "description": "The work / previous project experience required for the job referenced in the JAF."
+        "description": "Previous work/project experience required for the job referenced in the JAF."
       }}
       required: ["qualifications", "skills", "experience"]
     }},
@@ -133,9 +136,9 @@ For example, when extracting the 'Job Summary' from the JAF, you should extract 
 
 const splitText = (text) => {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 100,
-    chunkOverlap: 10,
-    separators: ['\n\n', '\n', ' ', '', '.']
+    chunkSize: 512,
+    chunkOverlap: 85,
+    separators: ['\n\n', '\n', ' ', '']
   })
 
   return splitter.splitText(text)
@@ -163,9 +166,14 @@ const extractJaf = async (jaf, contentType, options) => {
   }
 
   for (const prop of embedProps) {
-    const chunks = chunk ? await splitText(summary[prop]) : [summary[prop]]
+    let chunks
+    if (typeof summary[prop] === 'string') {
+      chunks = chunk ? await splitText(summary[prop]) : [summary[prop]]
 
-    console.log(chunks)
+      console.log(chunks)
+    } else if (typeof summary[prop] === 'object') {
+      chunks = summary[prop]
+    }
 
     const embeddedChunks = []
 

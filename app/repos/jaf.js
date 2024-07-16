@@ -1,22 +1,38 @@
 const { connection: knex } = require('../config/db')
 
-const getSimilarJafs = async (jaf, jafName) => {
+const getSimilarJafs = async (jafId) => {
   try {
-    const propEmbedding = jaf.embeddings.find(embedding => embedding.prop === 'summary')
-
-    const { embedded } = propEmbedding.embeddedChunks[0]
-
-    const formatted = JSON.stringify(embedded)
-
-    const jafs = await knex('jaf_vectors')
-      .innerJoin('jaf', 'jaf.id', 'jaf_vectors.jaf_id')
-      .select({
-        jafName: 'jaf.name',
-        cosine: knex.raw('AVG(1 - ("jaf_vectors"."vector" <=> ?))', [formatted])
+    const jafs = await knex('jaf').select({
+      jafName: 'jaf.name',
+      summaryCosine: knex.raw(`
+        CAST(AVG(CASE 
+          WHEN jv1.metadata->>'section' = 'summary' AND jv2.metadata->>'section' = 'summary' 
+          THEN 1 - (jv1.vector <=> jv2.vector) 
+        END) AS NUMERIC(10,5))`),
+      deliverablesCosine: knex.raw(`
+        CAST(AVG(CASE 
+          WHEN jv1.metadata->>'section' = 'deliverables' AND jv2.metadata->>'section' = 'deliverables' 
+          THEN 1 - (jv1.vector <=> jv2.vector) 
+        END) AS NUMERIC(10,5))`),
+      responsibilitiesCosine: knex.raw(`
+        CAST(AVG(CASE 
+          WHEN jv1.metadata->>'section' = 'key_responsibilities' AND jv2.metadata->>'section' = 'key_responsibilities' 
+          THEN 1 - (jv1.vector <=> jv2.vector) 
+        END) AS NUMERIC(10,5))`),
+      overallCosine: knex.raw('CAST(AVG(1 - (jv1.vector <=> jv2.vector)) AS NUMERIC(10,5))')
+    })
+      .innerJoin('jaf_vectors as jv1', 'jaf.id', 'jv1.jaf_id')
+      .innerJoin('jaf_vectors as jv2', function () {
+        this.on('jv1.jaf_id', '!=', 'jv2.jaf_id')
+          .andOn(knex.raw('jv1.metadata->>\'section\' = jv2.metadata->>\'section\''))
       })
-      .whereNot('jaf.name', jafName)
-      .groupBy('jafName')
-      .orderBy('cosine', 'desc')
+      .where('jv2.jaf_id', jafId)
+      .whereNot('jaf.id', jafId)
+      .groupBy('jaf.id', 'jaf.name')
+      .orderBy('overallCosine', 'desc')
+      .limit(5)
+
+    console.log(jafs)
 
     return jafs
   } catch (err) {
