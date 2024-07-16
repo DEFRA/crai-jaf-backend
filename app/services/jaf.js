@@ -1,7 +1,6 @@
-const util = require('util')
-
-const { addJaf, getSimilarJafs } = require('../repos/jaf')
+const { addJaf, getSimilarJafs, getJafById } = require('../repos/jaf')
 const { extractJaf } = require('./ai/extract-jaf')
+const { embeddings } = require('./ai/clients/azure')
 
 const embedProps = ['summary']
 
@@ -13,19 +12,31 @@ const storeJaf = async (jaf, contentType) => {
   return extracted
 }
 
-const findSimilarJaf = async (jaf, contentType) => {
-  const extracted = await extractJaf(jaf, contentType, { embedProps })
+const findJaf = async (jafId) => {
+  const jaf = await getJafById(jafId)
+  console.log(jaf)
 
-  console.log(util.inspect(extracted, { depth: null }))
+  const jafWithEmbeddings = {
+    ...jaf,
+    embeddings: [{
+      prop: 'summary',
+      embeddedChunks: [{
+        embedded: await embeddings.embedQuery(jaf.summary.summary)
+      }]
+    }]
+  }
 
-  const similarJafs = await getSimilarJafs(extracted)
+  const similarJafs = await getSimilarJafs(jafWithEmbeddings, jaf.name)
 
   console.log(`Found ${similarJafs.length} similar JAFs`)
 
-  return similarJafs
+  return {
+    jaf,
+    similarJafs
+  }
 }
 
 module.exports = {
   storeJaf,
-  findSimilarJaf
+  findJaf
 }

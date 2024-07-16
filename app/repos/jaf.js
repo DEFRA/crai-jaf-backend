@@ -1,6 +1,6 @@
 const { connection: knex } = require('../config/db')
 
-const getSimilarJafs = async (jaf) => {
+const getSimilarJafs = async (jaf, jafName) => {
   try {
     const propEmbedding = jaf.embeddings.find(embedding => embedding.prop === 'summary')
 
@@ -14,7 +14,7 @@ const getSimilarJafs = async (jaf) => {
         jafName: 'jaf.name',
         cosine: knex.raw('AVG(1 - ("jaf_vectors"."vector" <=> ?))', [formatted])
       })
-      .whereNot('jaf.name', jaf.jafName)
+      .whereNot('jaf.name', jafName)
       .groupBy('jafName')
       .orderBy('cosine', 'desc')
 
@@ -60,14 +60,10 @@ const addJaf = async (jaf) => {
   }
 }
 
-const getJafs = async (query) => {
+const getJafs = async () => {
   try {
     const jafs = knex('jaf')
       .select('id', 'name', 'summary')
-
-    if (query.jafName) {
-      jafs.where('name', `${query.jafName}`)
-    }
 
     return jafs
   } catch (err) {
@@ -94,7 +90,7 @@ const getJafById = async (id) => {
     throw err
   }
 
-  return jaf
+  return jaf[0]
 }
 
 module.exports = {

@@ -133,8 +133,9 @@ For example, when extracting the 'Job Summary' from the JAF, you should extract 
 
 const splitText = (text) => {
   const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 50,
-    chunkOverlap: 5
+    chunkSize: 100,
+    chunkOverlap: 10,
+    separators: ['\n\n', '\n', ' ', '', '.']
   })
 
   return splitter.splitText(text)
