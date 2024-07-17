@@ -1,7 +1,7 @@
 const { ChatPromptTemplate } = require('@langchain/core/prompts')
 const { JsonOutputParser } = require('@langchain/core/output_parsers')
 
-const { getJafById, getJafs } = require('../../repos/jaf')
+const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { chat } = require('./clients/azure')
 
 const prompt = `
@@ -158,14 +158,12 @@ const compareJafs = async (jafId1, jafId2) => {
   return similarJafs
 }
 
-const compareJafById = async (jafId) => {
+const compareJaf = async (jafId) => {
   const jaf = await getJafById(jafId)
-  console.log('JAf found')
-  const jafs = await getJafs()
-  console.log('JAfs found')
-  const mappedJafs = jafs.map(buildJafObject)
+  const grade = jaf.summary.details.grade
+  const jafs = await getJafsByGrade(grade)
 
-  console.log('JAfs built')
+  const mappedJafs = jafs.map(buildJafObject)
 
   const chain = ChatPromptTemplate.fromTemplate(prompt)
     .pipe(chat)
@@ -175,11 +173,11 @@ const compareJafById = async (jafId) => {
     jaf: JSON.stringify(buildJafObject(jaf)),
     jafs: JSON.stringify(mappedJafs)
   })
-  console.log('JAfs sim found')
+
   return similarJafs
 }
 
 module.exports = {
   compareJafs,
-  compareJafById
+  compareJaf
 }

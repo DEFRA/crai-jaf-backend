@@ -169,8 +169,6 @@ const extractJaf = async (jaf, contentType, options) => {
     let chunks
     if (typeof summary[prop] === 'string') {
       chunks = chunk ? await splitText(summary[prop]) : [summary[prop]]
-
-      console.log(chunks)
     } else if (typeof summary[prop] === 'object') {
       chunks = summary[prop]
     }

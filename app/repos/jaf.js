@@ -32,8 +32,6 @@ const getSimilarJafs = async (jafId) => {
       .orderBy('overallCosine', 'desc')
       .limit(5)
 
-    console.log(jafs)
-
     return jafs
   } catch (err) {
     throw new Error('Error getting similar JAFs: ', err)
@@ -87,6 +85,18 @@ const getJafs = async () => {
   }
 }
 
+const getJafsByGrade = async (grade) => {
+  try {
+    const jafs = knex('jaf')
+      .select('id', 'name', 'summary')
+      .whereRaw(knex.raw('summary->\'details\'->>\'grade\' = ?', [grade]))
+
+    return jafs
+  } catch (err) {
+    throw new Error('Error getting JAFs: ', err)
+  }
+}
+
 const getJafById = async (id) => {
   let jaf
 
@@ -113,5 +123,6 @@ module.exports = {
   getSimilarJafs,
   addJaf,
   getJafs,
+  getJafsByGrade,
   getJafById
 }
