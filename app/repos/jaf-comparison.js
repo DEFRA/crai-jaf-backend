@@ -2,7 +2,7 @@ const { connection: knex } = require('../config/db')
 
 const addJafComparison = async (baseJafId, comparedJafId, comparison) => {
   const trx = await knex.transaction()
-  console.log(comparison)
+
   try {
     await trx('jaf_comparison')
       .insert({
