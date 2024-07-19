@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+	<changeSet author="Sebastian Horon" id="1">
+		<tagDatabase tag="v3.0.0" />
+	</changeSet>
+    <changeSet author="Sebastian Horon" id="3">
+		<createTable tableName="jaf_comparison">
+            <column name="id" type="int" autoIncrement="true">
+				<constraints primaryKey="true" />
+			</column>
+			<column name="base_jaf_id" type="int">
+				<constraints nullable="false" foreignKeyName="jaf_comparison_base_jaf_id_fkey" references="jaf(id)" />
+			</column>
+            <column name="compared_jaf_id" type="int">
+				<constraints nullable="false" foreignKeyName="jaf_comparison_compared_jaf_id_fkey" references="jaf(id)" />
+			</column>
+            <column name="comparison_response" type="jsonb">
+				<constraints nullable="false" />
+			</column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

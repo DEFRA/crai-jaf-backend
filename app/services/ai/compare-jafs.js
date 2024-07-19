@@ -3,87 +3,76 @@ const { JsonOutputParser } = require('@langchain/core/output_parsers')
 
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { chat } = require('./clients/azure')
+const { addJafComparison } = require('../../repos/jaf-comparison')
 
 const prompt = `
   [INST]
-  You are an expert at comparing Job Analysis Forms (JAFs).
+  You are an expert at finding similarities and differences between Job Analysis Forms (JAFs).
 
   You will be provided with:
   1. [JAF]: The base JAF used for comparison.
-  2. [JAFS]: A list of JAFs to compare against the base JAF.
+  2. [COMPJAF]: JAF to compare the base JAF to.
 
   Instructions:
-  1. Compare the base [JAF] against each JAF in [JAFS].
-  2. Focus on skills and experiences deliverables, and key responsibilities for the comparison. Do not use JAF names in your analysis.
-  3. For each comparison, create a JSON object following the schema in [SCHEMA].
-  4. Include all skills and experiences in your analysis, even if they don't match.
-  5. Provide a comprehensive summary of your reasoning for the similarity score.
+  1. Find similarities and differences the base [JAF] and [COMPJAF].
+  2. Focus on skills, knowledge, deliverables, and main activities for the comparison. Do not use JAF names in your analysis.
+  3. Create a JSON object following the schema in [SCHEMA].
+  5. Provide a comprehensive summary of your reasoning for the similarity score and your findings.
 
   Output:
-  Return a JSON array containing comparison objects for all JAFs in [JAFS], strictly adhering to the schema in [SCHEMA].
+  Return a JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [JAF]
-  {jaf}
+  {baseJaf}
   [/JAF]
 
-  [JAFS]
-  {jafs}
-  [/JAFS]
+  [COMPJAF]
+  {comparedJaf}
+  [/COMPJAF]
 
   [SCHEMA]
   {{
-    "type": "array",
-    "items": {{
-      "type": "object",
-      "properties": {{
-        "name": {{
-          "type": "string",
-          "description": "The title of the job referenced in the JAF"
-        }},
-        "similarity_score": {{
-          "type": "number",
-          "description": "Similarity percentage (0-100) assigned by you"
-        }},
-        "skills": {{
-          "type": "array",
-          "items": {{
-            "type": "object",
-            "properties": {{
-              "skill": {{
-                "type": "string"
-              }},
-              "match": {{
-                "type": "boolean"
-              }},
-              "reasoning": {{
-                "type": "string"
-              }}
-            }},
-            "required": ["skill", "match", "reasoning"]
+    "type": "object",
+    "properties": {{
+      "name": {{
+        "type": "string",
+        "description": "The title of the job referenced in the JAF."
+      }},
+      "similarity_score": {{
+        "type": "number",
+        "description": "Similarity percentage (0-100) assigned by you."
+      }},
+      "job_summary": {{
+        "type": "object",
+        "properties": {{
+          "match": {{
+            "type": "boolean"
           }},
-          "description": "Comprehensive list of skills with match status and reasoning"
+          "reasoning": {{
+            "type": "string"
+          }}
         }},
-        "experience": {{
-          "type": "array",
-          "items": {{
-            "type": "object",
-            "properties": {{
-              "experience": {{
-                "type": "string"
-              }},
-              "match": {{
-                "type": "boolean"
-              }},
-              "reasoning": {{
-                "type": "string"
-              }}
+        "required": ["match", "reasoning"],
+        "description": "Comparison between job summaries with match status and reasoning behind it."
+      }},
+      "skills": {{
+        "type": "array",
+        "items": {{
+          "type": "object",
+          "properties": {{
+            "skill": {{
+              "type": "string"
             }},
-            "required": ["experience", "match", "reasoning"]
+            "match": {{
+              "type": "boolean"
+            }}
           }},
-          "description": "Comprehensive list of experiences with match status and reasoning"
+          "required": ["skill", "match"]
         }},
-        "deliverables": {{
+        "description": "Comprehensive list of skills with match status."
+      }},
+      "deliverables": {{
         "type": "array",
         "items": {{
           "type": "object",
@@ -100,7 +89,7 @@ const prompt = `
           }},
           "required": ["deliverable", "match", "reasoning"]
         }},
-        "description": "Comprehensive list of deliverables with match status and reasoning"
+        "description": "Comprehensive list of deliverables with match status and reasoning."
       }},
       "key_responsibilities": {{
         "type": "array",
@@ -119,65 +108,53 @@ const prompt = `
           }},
           "required": ["responsibility", "match", "reasoning"]
         }},
-        "description": "Comprehensive list of key responsibilities with match status and reasoning"
+        "description": "Comprehensive list of key responsibilities with match status and reasoning."
       }},
-        "summary": {{
-          "type": "string",
-          "description": "Comprehensive summary of reasoning behind your similarity scoring"
-        }}
-      }},
-      "required": ["name", "similarity_score", "skills", "experience", "deliverables", "key_responsibilities", "summary"]
-    }}
+      "summary": {{
+        "type": "string",
+        "description": "Comprehensive summary of reasoning behind your similarity scoring."
+      }}
+    }},
+    "required": ["name", "similarity_score", "job_summary", "skills", "deliverables", "key_responsibilities", "summary"]
   }}
   [/SCHEMA]
 `
 const buildJafObject = (jaf) => {
   return {
+    id: jaf.id,
     name: jaf.name,
-    skills: jaf.summary.knowledge.skills,
-    experience: jaf.summary.knowledge.experience,
+    skills: jaf.summary.skills,
+    jobSummary: jaf.summary.jobSummary,
+    knowledge: jaf.summary.knowledge,
     deliverables: jaf.summary.deliverables,
-    key_responsibilities: jaf.summary.key_responsibilities
+    keyResponsibilities: jaf.summary.keyResponsibilities,
+    mainActivities: jaf.summary.mainActivities
   }
 }
 
-const compareJafs = async (jafId1, jafId2) => {
-  const jaf1 = await getJafById(jafId1)
-
-  const jaf2 = await getJafById(jafId2)
-
+const compareJafs = async (baseJaf, comparedJaf) => {
   const chain = ChatPromptTemplate.fromTemplate(prompt)
     .pipe(chat)
     .pipe(new JsonOutputParser())
 
-  const similarJafs = await chain.invoke({
-    jaf: JSON.stringify(buildJafObject(jaf1)),
-    jafs: JSON.stringify(buildJafObject(jaf2))
+  const comparison = await chain.invoke({
+    baseJaf: JSON.stringify(buildJafObject(baseJaf)),
+    comparedJaf: JSON.stringify(buildJafObject(comparedJaf))
   })
 
-  return similarJafs
+  return comparison
 }
 
 const compareJaf = async (jafId) => {
   const jaf = await getJafById(jafId)
-  const grade = jaf.summary.details.grade
-  const jafs = await getJafsByGrade(grade)
+  const jafs = await getJafsByGrade(jaf.summary.details.grade)
 
-  const mappedJafs = jafs.map(buildJafObject)
-
-  const chain = ChatPromptTemplate.fromTemplate(prompt)
-    .pipe(chat)
-    .pipe(new JsonOutputParser())
-
-  const similarJafs = await chain.invoke({
-    jaf: JSON.stringify(buildJafObject(jaf)),
-    jafs: JSON.stringify(mappedJafs)
-  })
-
-  return similarJafs
+  for (const comparedJaf of jafs) {
+    const comparison = await compareJafs(jaf, comparedJaf)
+    await addJafComparison(jafId, comparedJaf.id, comparison)
+  }
 }
 
 module.exports = {
-  compareJafs,
   compareJaf
 }

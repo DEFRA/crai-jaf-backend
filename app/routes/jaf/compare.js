@@ -1,21 +1,24 @@
-const { compareJafs, compareJaf } = require('../../services/ai/compare-jafs')
+const { getJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
+const { compareJaf } = require('../../services/ai/compare-jafs')
 
 module.exports = [
   {
     method: 'GET',
     path: '/jaf/compare/{id}',
     handler: async (request, h) => {
-      const response = await compareJaf(request.params.id)
+      const jafId = request.params.id
+      await compareJaf(jafId)
 
+      const response = await getJafComparisons(jafId)
       return h.response({ response }).code(200)
     }
   },
   {
     method: 'GET',
-    path: '/jaf/compare/{baseId}/{compareId}',
+    path: '/jaf/compare/{baseId}/{comparedId}',
     handler: async (request, h) => {
-      const { baseId, compareId } = request.params
-      const response = await compareJafs(baseId, compareId)
+      const { baseId, comparedId } = request.params
+      const response = await getJafComparison(baseId, comparedId)
 
       return h.response({ response }).code(200)
     }
