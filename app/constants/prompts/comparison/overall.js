@@ -1,4 +1,4 @@
-const comparisonPrompt = `
+const overallPrompt = `
   [INST]
   You are an expert at finding similarities and differences between Job Analysis Forms (JAFs).
 
@@ -131,5 +131,5 @@ const comparisonPrompt = `
 `
 
 module.exports = {
-  comparisonPrompt
+  overallPrompt
 }
