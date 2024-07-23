@@ -18,9 +18,9 @@ const splitText = (text) => {
 const getSummary = async (text) => {
   const mapChain = RunnableMap.from({
     details: chains.detailsChain,
-    jobSummary: chains.jobSummaryChain,
-    mainActivities: chains.mainActivitiesChain,
-    keyResponsibilities: chains.keyResponsibilitiesChain,
+    job_summary: chains.jobSummaryChain,
+    main_activities: chains.mainActivitiesChain,
+    key_responsibilities: chains.keyResponsibilitiesChain,
     deliverables: chains.deliverablesChain,
     knowledge: chains.knowledgeChain,
     skills: chains.skillsChain
@@ -30,17 +30,10 @@ const getSummary = async (text) => {
     jaf: text
   })
 
-  const mapSummary = {
-    details: summary.details.details,
-    job_summary: summary.jobSummary.job_summary,
-    deliverables: summary.deliverables.deliverables,
-    main_activities: summary.mainActivities.main_activities,
-    key_responsibilities: summary.keyResponsibilities.key_responsibilities,
-    knowledge: summary.knowledge.knowledge,
-    skills: summary.skills.skills.join(', ')
-  }
+  summary.knowledge = summary.knowledge.knowledge
+  summary.job_summary = summary.job_summary.summary
 
-  return mapSummary
+  return summary
 }
 
 const extractJaf = async (jaf, contentType, options) => {

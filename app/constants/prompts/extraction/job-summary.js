@@ -13,11 +13,11 @@ const jobSummaryPrompt = `
   {{
     "type": "object",
     "properties": {{
-      "job_summary": {{
+      "summary": {{
         "type": "string",
         "description": "The job summary from the JAF"
       }},
-      required: ["job_summary"]
+      required: ["summary"]
     }}
   }}
   [/SCHEMA]

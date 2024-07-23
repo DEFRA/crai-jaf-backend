@@ -4,7 +4,7 @@ const { JsonOutputParser } = require('@langchain/core/output_parsers')
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { chat } = require('./clients/azure')
 const { addJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
-const { comparisonPrompt } = require('../../constants/prompts/comparison')
+const { overallPrompt } = require('../../constants/prompts/comparison')
 
 const buildJafObject = (jaf) => {
   return {
@@ -16,7 +16,7 @@ const buildJafObject = (jaf) => {
 }
 
 const compareJafs = async (baseJaf, comparedJaf) => {
-  const chain = ChatPromptTemplate.fromTemplate(comparisonPrompt)
+  const chain = ChatPromptTemplate.fromTemplate(overallPrompt)
     .pipe(chat)
     .pipe(new JsonOutputParser())
 

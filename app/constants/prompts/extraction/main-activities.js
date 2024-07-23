@@ -4,34 +4,28 @@ const mainActivitiesPrompt = `
 
   You will be provided with [JAF], a Job Analysis Form.
 
-  Your task is to extract main activities from the [JAF] and return a JSON object with an array of those main activities and time percentages, strictly adhering to the JSON schema in [SCHEMA].
+  Your task is to extract main activities from the [JAF] and return a JSON array of those main activities and time percentages, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON object. Do not include anything else.
+  Return only the JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]
   {{
-    "type": "object",
-    "properties": {{
-      "main_activities": {{
-        "type": "array",
-        "items": {{
-          "type": "object",
-          "properties": {{
-            "activity": {{
-              "type": "string",
-              "description": "Description of the activity"
-            }},
-            "time_percentage": {{
-              "type": "string",
-              "description": "Time percentage of the activity"
-            }}
-          }}
+    "type": "array",
+    "items": {{
+      "type": "object",
+      "properties": {{
+        "activity": {{
+          "type": "string",
+          "description": "Description of the activity"
         }},
-        "description": "The main activities of the job referenced in the JAF"
-      }},
-      required: ["main_activities"]
-    }}
+        "time_percentage": {{
+          "type": "string",
+          "description": "Time percentage of the activity"
+        }}
+      }}
+    }},
+    "description": "The main activities of the job referenced in the JAF"
   }}
   [/SCHEMA]
 

@@ -4,24 +4,18 @@ const skillsPrompt = `
 
   You will be provided with [JAF], a Job Analysis Form.
 
-  Your task is to extract skills from the [JAF] and return a JSON object with an array of those skills, strictly adhering to the JSON schema in [SCHEMA].
+  Your task is to extract skills from the [JAF] and return a JSON array of those skills, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON object. Do not include anything else.
+  Return only the JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]
   {{
-    "type": "object",
-    "properties": {{
-      "skills": {{
-        "type": "array",
-        "items": {{
-          "type": "string"
-        }},
-        "description": "The skills required for the job referenced in the JAF."
-      }},
-      required: ["skills"]
-    }}
+    "type": "array",
+    "items": {{
+      "type": "string"
+    }},
+    "description": "The skills required for the job referenced in the JAF."
   }}
   [/SCHEMA]
 

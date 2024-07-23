@@ -4,24 +4,18 @@ const keyResponsibilitiesPrompt = `
 
   You will be provided with [JAF], a Job Analysis Form.
 
-  Your task is to extract key responsibilities from the [JAF] and return a JSON object with an array of those key responsibilities, strictly adhering to the JSON schema in [SCHEMA].
+  Your task is to extract key responsibilities from the [JAF] and return a JSON array of those key responsibilities, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON object. Do not include anything else.
+  Return only the JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]
   {{
-    "type": "object",
-    "properties": {{
-      "key_responsibilities": {{
-        "type": "array",
-        "items": {{
-          "type": "string"
-        }},
-        "description": "The key responsibilities of the job referenced in the JAF"
-      }},
-      required: ["key_responsibilities"]
-    }}
+    "type": "array",
+    "items": {{
+      "type": "string"
+    }},
+    "description": "The key responsibilities of the job referenced in the JAF"
   }}
   [/SCHEMA]
 

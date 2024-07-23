@@ -13,22 +13,16 @@ const detailsPrompt = `
   {{
     "type": "object",
     "properties": {{
-      "details": {{
-        "type": "object",
-        "properties": {{
-          "job_title": {{
-            "type": "string",
-            "description": "The title of the job referenced in the JAF"
-          }},
-          "grade": {{
-            "type": "string",
-            "enum": ["AO", "EO", "HEO", "SEO", "G7", "G6"],
-            "description": "The grade of the job referenced in the JAF"
-          }}
-          required: ["job_title", "grade"]
-        }}
+      "job_title": {{
+        "type": "string",
+        "description": "The title of the job referenced in the JAF"
       }},
-      required: ["details"]
+      "grade": {{
+        "type": "string",
+        "enum": ["AO", "EO", "HEO", "SEO", "G7", "G6"],
+        "description": "The grade of the job referenced in the JAF"
+      }}
+      required: ["job_title", "grade"]
     }}
   }}
   [/SCHEMA]
