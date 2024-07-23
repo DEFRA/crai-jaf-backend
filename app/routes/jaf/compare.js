@@ -1,4 +1,4 @@
-const { getJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
+const { getJafComparison } = require('../../repos/jaf-comparison')
 const { compareJaf } = require('../../services/ai/compare-jafs')
 
 module.exports = [
@@ -7,10 +7,9 @@ module.exports = [
     path: '/jaf/compare/{id}',
     handler: async (request, h) => {
       const jafId = request.params.id
-      await compareJaf(jafId)
+      const comparedJafs = await compareJaf(jafId)
 
-      const response = await getJafComparisons(jafId)
-      return h.response({ response }).code(200)
+      return h.response(comparedJafs).code(200)
     }
   },
   {
@@ -18,9 +17,9 @@ module.exports = [
     path: '/jaf/compare/{baseId}/{comparedId}',
     handler: async (request, h) => {
       const { baseId, comparedId } = request.params
-      const response = await getJafComparison(baseId, comparedId)
+      const comparedJafs = await getJafComparison(baseId, comparedId)
 
-      return h.response({ response }).code(200)
+      return h.response(comparedJafs).code(200)
     }
   }
 ]

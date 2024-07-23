@@ -22,11 +22,12 @@ const addJafComparison = async (baseJafId, comparedJafId, comparison) => {
 const getJafComparison = async (baseJafId, comparedJafId) => {
   try {
     const comparison = await knex('jaf_comparison')
+      .leftJoin('jaf', 'jaf_comparison.compared_jaf_id', 'jaf.id')
       .select('*')
       .where('base_jaf_id', baseJafId)
       .andWhere('compared_jaf_id', comparedJafId)
 
-    return comparison
+    return comparison[0]
   } catch (err) {
     console.log('Error fetching jaf comparison: ', err)
     throw err
@@ -36,8 +37,10 @@ const getJafComparison = async (baseJafId, comparedJafId) => {
 const getJafComparisons = async (baseJafId) => {
   try {
     const comparisons = await knex('jaf_comparison')
+      .leftJoin('jaf', 'jaf_comparison.compared_jaf_id', 'jaf.id')
       .select('*')
       .where('base_jaf_id', baseJafId)
+      .orderBy(knex.raw('comparison_response->\'similarity_score\''), 'desc')
 
     return comparisons
   } catch (err) {

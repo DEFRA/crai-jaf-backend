@@ -32,10 +32,10 @@ const getSummary = async (text) => {
 
   const mapSummary = {
     details: summary.details.details,
-    jobSummary: summary.jobSummary.job_summary,
+    job_summary: summary.jobSummary.job_summary,
     deliverables: summary.deliverables.deliverables,
-    mainActivities: summary.mainActivities.main_activities,
-    keyResponsibilities: summary.keyResponsibilities.key_responsibilities,
+    main_activities: summary.mainActivities.main_activities,
+    key_responsibilities: summary.keyResponsibilities.key_responsibilities,
     knowledge: summary.knowledge.knowledge,
     skills: summary.skills.skills.join(', ')
   }

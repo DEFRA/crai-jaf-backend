@@ -1,7 +1,7 @@
 const { addJaf, getSimilarJafs, getJafById } = require('../repos/jaf')
 const { extractJaf } = require('./ai/extract-jaf')
 
-const embedProps = ['jobSummary', 'deliverables', 'knowledge', 'skills', 'keyResponsibilities']
+const embedProps = ['job_summary', 'deliverables', 'knowledge', 'skills', 'key_responsibilities']
 
 const storeJaf = async (jaf, contentType) => {
   const extracted = await extractJaf(jaf, contentType, { embedProps, chunk: true })
@@ -14,14 +14,11 @@ const storeJaf = async (jaf, contentType) => {
 const findJaf = async (jafId) => {
   const jaf = await getJafById(jafId)
 
-  const similarJafs = await getSimilarJafs(jaf)
+  jaf.similarJafs = await getSimilarJafs(jaf)
 
-  console.log(`Found ${similarJafs.length} similar JAFs`)
+  console.log(`Found ${jaf.similarJafs.length} similar JAFs`)
 
-  return {
-    jaf,
-    similarJafs
-  }
+  return jaf
 }
 
 module.exports = {
