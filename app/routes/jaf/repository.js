@@ -1,6 +1,6 @@
 const { processPayloadFile } = require('../../lib/process-payload-file')
-const { getJafs, getJafById } = require('../../repos/jaf')
-const { storeJaf } = require('../../services/jaf')
+const { getJafs } = require('../../repos/jaf')
+const { storeJaf, findJaf } = require('../../services/jaf')
 
 module.exports = [
   {
@@ -23,7 +23,7 @@ module.exports = [
       try {
         const { id } = request.params
 
-        const jaf = await getJafById(id)
+        const jaf = await findJaf(id)
 
         return h.response(jaf).code(200)
       } catch (err) {

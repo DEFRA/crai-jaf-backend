@@ -1,24 +1,5 @@
 const { connection: knex } = require('../config/db')
 
-const getSimilarJafs = async (jafName, embeddings, maxJafs) => {
-  const formatted = JSON.stringify(embeddings)
-
-  try {
-    const jafs = await knex('jaf_knowledge_vectors')
-      .select({
-        jafName: knex.raw('metadata->>\'jafName\''),
-        similarity: knex.raw('1 - (vector <=> ?)', [formatted])
-      })
-      .whereRaw(knex.raw('metadata->>\'jafName\' != ?', [jafName]))
-      .orderBy(knex.raw('1 - (vector <=> ?)', [formatted]), 'desc')
-      .limit(maxJafs)
-
-    return jafs
-  } catch (err) {
-    throw new Error('Error processing query: ', err)
-  }
-}
-
 const addJaf = async (jaf) => {
   const trx = await knex.transaction()
 
@@ -55,14 +36,22 @@ const addJaf = async (jaf) => {
   }
 }
 
-const getJafs = async (query) => {
+const getJafs = async () => {
   try {
     const jafs = knex('jaf')
       .select('id', 'name', 'summary')
 
-    if (query.jafName) {
-      jafs.where('name', `${query.jafName}`)
-    }
+    return jafs
+  } catch (err) {
+    throw new Error('Error getting JAFs: ', err)
+  }
+}
+
+const getJafsByGrade = async (grade) => {
+  try {
+    const jafs = knex('jaf')
+      .select('id', 'name', 'summary')
+      .whereRaw(knex.raw('summary->\'details\'->>\'grade\' = ?', [grade]))
 
     return jafs
   } catch (err) {
@@ -89,12 +78,12 @@ const getJafById = async (id) => {
     throw err
   }
 
-  return jaf
+  return jaf[0]
 }
 
 module.exports = {
-  getSimilarJafs,
   addJaf,
   getJafs,
+  getJafsByGrade,
   getJafById
 }

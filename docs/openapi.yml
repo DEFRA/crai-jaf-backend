@@ -99,6 +99,33 @@ paths:
                     $ref: '#/components/schemas/JafSummary'
         '404':
           description: 'No JAF found with id: {id}'
+  /jaf/compare:
+    post:
+      tags:
+        - 'JAF Compare'
+      summary: 'Compare the chosen JAF with other JAFS'
+      requestBody:
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '200':
+          description: 'Comparison conducted successfully'
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    jafName:
+                      type: string
+                      description: 'The name of the JAF'
+                    cosine:
+                      type: number
+                      description: 'Cosine similarity score between this JAF and chosen JAF'
 
 components:
   schemas:
