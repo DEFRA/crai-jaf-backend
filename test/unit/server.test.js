@@ -1,5 +1,5 @@
 jest.mock('../../app/routes/jaf/repository', () => {})
-jest.mock('../../app/routes/jaf/compare', () => { })
+jest.mock('../../app/routes/jaf/compare', () => {})
 
 jest.mock('../../app/insights', () => {
   return {

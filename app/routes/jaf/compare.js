@@ -1,5 +1,5 @@
 const { getJafComparison } = require('../../repos/jaf-comparison')
-const { compareJaf } = require('../../services/ai/compare-jafs')
+const { generateJafComparison } = require('../../services/ai/compare-jafs')
 
 module.exports = [
   {
@@ -7,7 +7,7 @@ module.exports = [
     path: '/jaf/compare/{id}',
     handler: async (request, h) => {
       const jafId = request.params.id
-      const comparedJafs = await compareJaf(jafId)
+      const comparedJafs = await generateJafComparison(jafId)
 
       return h.response(comparedJafs).code(200)
     }
