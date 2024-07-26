@@ -1,3 +1,14 @@
 - key: APPINSIGHTS_CONNECTIONSTRING
   value: "{{servicename}}-APPINSIGHTS-CONNECTIONSTRING"
   type: "keyvault"
+- key: AZURE_OPENAI_INSTANCE_NAME
+  value: "{{servicename}}-AZURE-OPENAI-INSTANCE-NAME"
+  type: "keyvault"
+- key: EMBEDDING_MODEL_NAME
+  value: "{{servicename}}-EMBEDDING-MODEL-NAME"
+  type: "keyvault"
+- key: GENERATION_MODEL_NAME
+  value: "{{servicename}}-GENERATION-MODEL-NAME"
+  type: "keyvault"
+- key: AZURE_OPENAI_API_VERSION
+  value: "2024-02-01"
