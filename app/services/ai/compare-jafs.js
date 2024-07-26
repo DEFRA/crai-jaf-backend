@@ -1,26 +1,35 @@
-const { ChatPromptTemplate } = require('@langchain/core/prompts')
-const { JsonOutputParser } = require('@langchain/core/output_parsers')
+const { RunnableSequence } = require('@langchain/core/runnables')
 
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
-const { chat } = require('./clients/azure')
 const { addJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
-const { overallPrompt } = require('../../constants/prompts/comparison')
+const chains = require('./chains/compare-chains')
 
 const buildJafObject = (jaf) => {
   return {
     jobSummary: jaf.summary.job_summary,
-    skills: jaf.summary.skills,
-    keyResponsibilities: jaf.summary.key_responsibilities,
-    mainActivities: jaf.summary.main_activities
+    mainActivities: jaf.summary.main_activities,
+    knowledge: jaf.summary.knowledge,
+    skills: jaf.summary.skills
   }
 }
 
 const compareJafs = async (baseJaf, comparedJaf) => {
-  const chain = ChatPromptTemplate.fromTemplate(overallPrompt)
-    .pipe(chat)
-    .pipe(new JsonOutputParser())
+  const mapChain = RunnableSequence.from([
+    {
+      tasks: chains.taskChain,
+      competencies: chains.competencyChain
+    },
+    {
+      linkage: async (input) => chains.linkageChain.invoke({
+        tasks: JSON.stringify(input.tasks),
+        competencies: JSON.stringify(input.competencies)
+      }),
+      tasks: (input) => input.tasks,
+      competencies: (input) => input.competencies
+    }
+  ])
 
-  const comparison = await chain.invoke({
+  const comparison = await mapChain.invoke({
     baseJaf: JSON.stringify(buildJafObject(baseJaf)),
     comparedJaf: JSON.stringify(buildJafObject(comparedJaf))
   })
@@ -28,7 +37,7 @@ const compareJafs = async (baseJaf, comparedJaf) => {
   return comparison
 }
 
-const compareJaf = async (jafId) => {
+const generateJafComparison = async (jafId) => {
   const jaf = await getJafById(jafId)
 
   const jafComparisons = await getJafComparisons(jafId)
@@ -49,5 +58,5 @@ const compareJaf = async (jafId) => {
 }
 
 module.exports = {
-  compareJaf
+  generateJafComparison
 }

@@ -14,8 +14,6 @@ const storeJaf = async (jaf, contentType) => {
 const findJaf = async (jafId) => {
   const jaf = await getJafById(jafId)
 
-  console.log(`Found ${jaf.similarJafs.length} similar JAFs`)
-
   return jaf
 }
 

@@ -7,13 +7,13 @@ const taskPrompt = `
   2. [COMPJAF]: JAF to compare the base JAF to.
 
   Instructions:
-  1. Find similarities and differences the base [JAF] and [COMPJAF].
-  2. Focus on skills, knowledge, deliverables, and main activities for the comparison.
-  3. Create a JSON object following the schema in [SCHEMA].
-  4. Provide a comprehensive summary of your reasoning for the similarity score and your findings.
+  1. Find similarities and differences between tasks in the base [JAF] and [COMPJAF].
+  2. Focus on job summary and main activities for the comparison.
+  3. Create a JSON object with a comprehensive list of tasks, scored using mechanism outlined in [TASK_SCORING].
+  4. Provide a comprehensive summary of your reasoning for your findings.
 
   Output:
-  Return a JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
+  Return a JSON array containing the tasks, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [TASK_SCORING]
@@ -25,7 +25,7 @@ const taskPrompt = `
   * 4 = Very Important
   * 5 = Extremely Important
   ----
-  Frequency - How often is the task performed?
+  Frequency Scale - How often is the task performed?
   * 0 = Not Performed
   * 1 = Every few months to yearly
   * 2 = Every few weeks to monthly
@@ -44,88 +44,26 @@ const taskPrompt = `
 
   [SCHEMA]
   {{
-    "type": "object",
+    "type": "array",
     "properties": {{
-      "similarity_score": {{
+      "task": {{
+        "type": "string",
+        "description": "Name of the task."
+      }},
+      "importance_score": {{
         "type": "number",
-        "description": "Similarity percentage (0-100) assigned by you."
+        "description": "Score of the task, scored using the Importance Scale in [TASK_SCORING]."
       }},
-      "job_summary": {{
-        "type": "object",
-        "properties": {{
-          "match": {{
-            "type": "boolean"
-          }},
-          "reasoning": {{
-            "type": "string"
-          }}
-        }},
-        "required": ["match", "reasoning"],
-        "description": "Comparison between job summaries with match status and reasoning behind it."
-      }},
-      "skills": {{
-        "type": "array",
-        "items": {{
-          "type": "object",
-          "properties": {{
-            "skill": {{
-              "type": "string"
-            }},
-            "match": {{
-              "type": "boolean"
-            }}
-          }},
-          "required": ["skill", "match"]
-        }},
-        "description": "Comprehensive list of skills with match status."
-      }},
-      "key_responsibilities": {{
-        "type": "array",
-        "items": {{
-          "type": "object",
-          "properties": {{
-            "responsibility": {{
-              "type": "string"
-            }},
-            "match": {{
-              "type": "boolean"
-            }},
-            "reasoning": {{
-              "type": "string"
-            }}
-          }},
-          "required": ["responsibility", "match", "reasoning"]
-        }},
-        "description": "Comprehensive list of key responsibilities with match status and reasoning."
-      }},
-      "main_activities": {{
-        "type": "array",
-        "items": {{
-          "type": "object",
-          "properties": {{
-            "activity": {{
-              "type": "string"
-            }},
-            "importance_score": {{
-              "type": "number"
-            }},
-            "frequency_score": {{
-              "type": "number"
-            }},
-            "reasoning": {{
-              "type": "string"
-            }}
-          }},
-          "required": ["activity", "importance_score", "frequency_score", "reasoning"]
-        }},
-        "description": "Comprehensive list of activities/tasks, scored using mechanism outlined in [TASK_SCORING]."
+      "frequency_score": {{
+        "type": "number",
+        "description": "Score of the task, scored using the Frequency Scale in [TASK_SCORING]."
       }},
       "summary": {{
         "type": "string",
-        "description": "Comprehensive summary of reasoning behind your similarity scoring."
+        "description": "Comprehensive summary of reasoning behind task scorings."
       }}
     }},
-    "required": ["similarity_score", "job_summary", "skills", "key_responsibilities", "main_activities", "summary"]
+    "required": ["task", "importance_score", "frequency_score", "summary"]
   }}
   [/SCHEMA]
 `
