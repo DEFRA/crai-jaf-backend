@@ -9,11 +9,11 @@ const taskPrompt = `
   Instructions:
   1. Find similarities and differences between tasks in the base [JAF] and [COMPJAF].
   2. Focus on job summary and main activities for the comparison.
-  3. Create a nameless JSON array with a comprehensive list of tasks, scored using mechanism outlined in [TASK_SCORING].
+  3. Create a JSON object with a comprehensive list of tasks, scored using mechanism outlined in [TASK_SCORING].
   4. Provide a comprehensive summary of your reasoning for your findings.
 
   Output:
-  Return a nameless JSON array containing the tasks, strictly adhering to the schema in [SCHEMA].
+  Return a JSON array containing the tasks, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [TASK_SCORING]

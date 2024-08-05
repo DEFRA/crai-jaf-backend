@@ -8,10 +8,10 @@ const linkagePrompt = `
 
   Instructions:
   1. Match tasks in [TASKS] to competencies in [COMPETENCIES].
-  2. Create a nameless JSON object with arrays of tasks and competencies.
+  2. Create a JSON object with arrays of of tasks and competencies.
 
   Output:
-  Return a nameless JSON object containing the tasks and competencies arrays, strictly adhering to the schema in [SCHEMA].
+  Return a JSON object containing the tasks and competencies arrays, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [TASKS]

@@ -12,13 +12,11 @@ const buildChain = (prompt) => {
   return chain
 }
 
-const overallChain = buildChain(prompts.overallPrompt)
 const competencyChain = buildChain(prompts.competencyPrompt)
 const taskChain = buildChain(prompts.taskPrompt)
 const linkageChain = buildChain(prompts.linkagePrompt)
 
 module.exports = {
-  overallChain,
   competencyChain,
   linkageChain,
   taskChain

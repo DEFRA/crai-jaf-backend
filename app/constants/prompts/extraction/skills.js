@@ -6,7 +6,7 @@ const skillsPrompt = `
 
   Your task is to extract skills from the [JAF] and return a JSON array of those skills, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the nameless JSON array. Do not include anything else.
+  Return only the JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]

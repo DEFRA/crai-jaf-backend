@@ -6,7 +6,7 @@ const detailsPrompt = `
 
   Your task is to extract details from the [JAF] and return a JSON object with those details, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the nameless JSON object. Do not include anything else.
+  Return only the JSON object. Do not include anything else.
   [/INST]
 
   [SCHEMA]
