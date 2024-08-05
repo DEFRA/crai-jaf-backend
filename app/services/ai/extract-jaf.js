@@ -20,8 +20,6 @@ const getSummary = async (text) => {
     details: chains.detailsChain,
     job_summary: chains.jobSummaryChain,
     main_activities: chains.mainActivitiesChain,
-    key_responsibilities: chains.keyResponsibilitiesChain,
-    deliverables: chains.deliverablesChain,
     knowledge: chains.knowledgeChain,
     skills: chains.skillsChain
   })

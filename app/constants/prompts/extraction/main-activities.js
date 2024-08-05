@@ -6,7 +6,7 @@ const mainActivitiesPrompt = `
 
   Your task is to extract main activities from the [JAF] and return a JSON array of those main activities and time percentages, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON array. Do not include anything else.
+  Return only the nameless JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]

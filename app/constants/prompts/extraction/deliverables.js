@@ -6,7 +6,7 @@ const deliverablesPrompt = `
 
   Your task is to extract deliverables from the [JAF] and return a JSON array of those deliverables, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON array. Do not include anything else.
+  Return only the nameless JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]
@@ -16,7 +16,6 @@ const deliverablesPrompt = `
       "type": "string"
     }},
     "description": "The deliverables of the job referenced in the JAF"
-    }}
   }}
   [/SCHEMA]
 

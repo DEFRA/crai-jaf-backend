@@ -6,7 +6,7 @@ const keyResponsibilitiesPrompt = `
 
   Your task is to extract key responsibilities from the [JAF] and return a JSON array of those key responsibilities, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON array. Do not include anything else.
+  Return only the nameless JSON array. Do not include anything else.
   [/INST]
 
   [SCHEMA]

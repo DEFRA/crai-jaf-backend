@@ -6,7 +6,7 @@ const knowledgePrompt = `
 
   Your task is to extract knowledge from the [JAF] and return a JSON object with a comprehensive summary of that knowledge, strictly adhering to the JSON schema in [SCHEMA].
 
-  Return only the JSON object. Do not include anything else.
+  Return only the nameless JSON object. Do not include anything else.
   [/INST]
 
   [SCHEMA]
