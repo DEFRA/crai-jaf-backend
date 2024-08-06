@@ -7,10 +7,9 @@ const overallPrompt = `
   2. [COMPJAF]: JAF to compare the base JAF to.
 
   Instructions:
-  1. Find similarities and differences the base [JAF] and [COMPJAF].
-  2. Focus on skills, knowledge, deliverables, and main activities for the comparison.
-  3. Create a JSON object following the schema in [SCHEMA].
-  4. Provide a comprehensive summary of your reasoning for the similarity score and your findings.
+  1. Compare the 2 JAFs, find key differences and score the similarity between them from 0 to 100 precent.
+  2. Create a nameless JSON object following the schema in [SCHEMA].
+  3. Provide a comprehensive summary of your reasoning for the similarity score and your findings.
 
   Output:
   Return a JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
@@ -122,10 +121,10 @@ const overallPrompt = `
       }},
       "summary": {{
         "type": "string",
-        "description": "Comprehensive summary of reasoning behind your similarity scoring."
+        "description": "Summary of the comparison."
       }}
     }},
-    "required": ["similarity_score", "job_summary", "skills", "key_responsibilities", "main_activities", "summary"]
+    "required": ["similarity_score", "key_differences", "summary"]
   }}
   [/SCHEMA]
 `

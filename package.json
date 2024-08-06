@@ -27,6 +27,7 @@
     "joi": "^17.13.3",
     "knex": "^3.1.0",
     "langchain": "^0.2.8",
+    "langfuse-langchain": "^3.17.0",
     "mammoth": "^1.8.0",
     "pdf-parse": "^1.1.1",
     "pg": "^8.12.0",
