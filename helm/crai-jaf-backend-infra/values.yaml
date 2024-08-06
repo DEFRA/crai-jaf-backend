@@ -3,6 +3,6 @@
 
 postgres:
   db:
-    name: crai-jaf
+    name: jaf
     charset: UTF8
     collation: en_US.utf8

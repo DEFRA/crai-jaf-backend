@@ -1,6 +1,11 @@
 const Joi = require('joi')
-const { DefaultAzureCredential } = require('@azure/identity')
+const { DefaultAzureCredential, getBearerTokenProvider } = require('@azure/identity')
 const knex = require('knex')
+
+const tokenProvider = getBearerTokenProvider(
+  new DefaultAzureCredential({ managedIdentityClientId: process.env.AZURE_CLIENT_ID }),
+  'https://ossrdbms-aad.database.windows.net'
+)
 
 const schema = Joi.object({
   postgresConnectionOptions: Joi.object({
@@ -8,8 +13,12 @@ const schema = Joi.object({
     host: Joi.string().required(),
     port: Joi.number().required(),
     user: Joi.string().required(),
-    password: Joi.string().when('$NODE_ENV', { is: 'production', then: Joi.optional(), otherwise: Joi.required() }),
-    database: Joi.string().required()
+    password: Joi.alternatives().try(
+      Joi.string(),
+      Joi.func()
+    ).required(),
+    database: Joi.string().required(),
+    ssl: Joi.boolean().required()
   }).required(),
   tableName: Joi.string().default('jaf_knowledge_vectors'),
   columns: Joi.object({
@@ -26,8 +35,9 @@ const config = {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
     user: process.env.POSTGRES_USERNAME,
-    password: process.env.POSTGRES_PASSWORD,
-    database: process.env.POSTGRES_DB
+    password: process.env.NODE_ENV === 'production' ? tokenProvider : process.env.POSTGRES_PASSWORD,
+    database: process.env.POSTGRES_DB,
+    ssl: process.env.NODE_ENV === 'production'
   },
   tableName: 'jaf_knowledge_vectors',
   columns: {
@@ -38,31 +48,18 @@ const config = {
   }
 }
 
-const getConfig = async () => {
-  const { error, value } = schema.validate(config)
+const { error, value } = schema.validate(config, { abortEarly: false })
 
-  if (process.env.NODE_ENV === 'production') {
-    const credential = new DefaultAzureCredential()
-    const { token } = await credential.getToken('https://ossrdbms-aad.database.windows.net', { requestOptions: { timeout: 1000 } })
-    config.postgresConnectionOptions.password = token
-  }
-
-  if (error) {
-    throw new Error(`Postgres config validation error: ${error.message}`)
-  }
-
-  return value
+if (error) {
+  throw new Error('DB Config Invalid: ', error.message)
 }
 
 const connection = knex({
   client: 'pg',
-  connection: async () => {
-    const { postgresConnectionOptions } = await getConfig()
-    return postgresConnectionOptions
-  }
+  connection: value.postgresConnectionOptions
 })
 
 module.exports = {
-  getConfig,
-  connection
+  connection,
+  config: value
 }

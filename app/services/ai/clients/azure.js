@@ -1,5 +1,5 @@
-const { openAi } = require('../../../config/ai').azure
-const { DefaultAzureCredential } = require('@azure/identity')
+const aiConfig = require('../../../config/ai')
+const { DefaultAzureCredential, getBearerTokenProvider } = require('@azure/identity')
 const { AzureChatOpenAI, AzureOpenAIEmbeddings } = require('@langchain/openai')
 
 const onFailedAttempt = async (error) => {
@@ -8,21 +8,25 @@ const onFailedAttempt = async (error) => {
   }
 }
 
-const getConfig = (model) => {
+const tokenProvider = getBearerTokenProvider(
+  new DefaultAzureCredential({ managedIdentityClientId: process.env.AZURE_CLIENT_ID }),
+  'https://cognitiveservices.azure.com/.default'
+)
+
+const getConfig = () => {
   const config = {
-    azureOpenAIApiDeploymentName: model,
-    azureOpenAIApiVersion: openAi.apiVersion,
-    azureOpenAIApiInstanceName: openAi.instanceName,
+    azureOpenAIApiVersion: aiConfig.apiVersion,
+    azureOpenAIApiInstanceName: aiConfig.instanceName,
     onFailedAttempt,
     verbose: true
   }
 
-  if (openAi.apiKey) {
+  if (aiConfig.apiKey) {
     console.log('Using Azure OpenAI API key')
 
     return {
       ...config,
-      azureOpenAIApiKey: openAi.apiKey
+      azureOpenAIApiKey: aiConfig.apiKey
     }
   }
 
@@ -30,12 +34,18 @@ const getConfig = (model) => {
 
   return {
     ...config,
-    credentials: new DefaultAzureCredential({ managedIdentityClientId: process.env.AZURE_CLIENT_ID })
+    azureADTokenProvider: tokenProvider
   }
 }
 
-const chat = new AzureChatOpenAI(getConfig(openAi.generationModelName))
-const embeddings = new AzureOpenAIEmbeddings(getConfig(openAi.embeddingsModelName))
+const chat = new AzureChatOpenAI({
+  ...getConfig(),
+  azureOpenAIApiDeploymentName: aiConfig.generationModelName
+})
+const embeddings = new AzureOpenAIEmbeddings({
+  ...getConfig(),
+  azureOpenAIApiDeploymentName: aiConfig.embeddingsModelName
+})
 
 module.exports = {
   chat,
