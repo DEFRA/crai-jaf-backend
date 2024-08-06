@@ -3,6 +3,7 @@ const { RunnableSequence } = require('@langchain/core/runnables')
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { addJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
 const chains = require('./chains/compare-chains')
+const { langfuseHandler } = require('../../config/langfuse')
 
 const buildJafObject = (jaf) => {
   return {
@@ -17,7 +18,8 @@ const compareJafs = async (baseJaf, comparedJaf) => {
   const mapChain = RunnableSequence.from([
     {
       tasks: chains.taskChain,
-      competencies: chains.competencyChain
+      competencies: chains.competencyChain,
+      summary: chains.overallChain
     },
     {
       linkage: async (input) => chains.linkageChain.invoke({
@@ -25,14 +27,19 @@ const compareJafs = async (baseJaf, comparedJaf) => {
         competencies: JSON.stringify(input.competencies)
       }),
       tasks: (input) => input.tasks,
-      competencies: (input) => input.competencies
+      competencies: (input) => input.competencies,
+      summary: (input) => input.summary
     }
   ])
 
-  const comparison = await mapChain.invoke({
-    baseJaf: JSON.stringify(buildJafObject(baseJaf)),
-    comparedJaf: JSON.stringify(buildJafObject(comparedJaf))
-  })
+  const comparison = await mapChain.invoke(
+    {
+      baseJaf: JSON.stringify(buildJafObject(baseJaf)),
+      comparedJaf: JSON.stringify(buildJafObject(comparedJaf))
+    },
+    {
+      callbacks: [langfuseHandler]
+    })
 
   return comparison
 }
