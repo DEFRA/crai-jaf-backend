@@ -7,19 +7,19 @@ const schema = Joi.object({
   baseUrl: Joi.string().required()
 })
 
-const langfuseParams = {
+const config = {
   publicKey: process.env.LANGFUSE_PUBLIC_KEY,
   secretKey: process.env.LANGFUSE_SECRET_KEY,
   baseUrl: process.env.LANGFUSE_BASEURL
 }
 
-const { error, value } = schema.validate(langfuseParams, { abortEarly: false })
+const { error, value } = schema.validate(config, { abortEarly: false })
 
 if (error) {
-  throw new Error('DB Config Invalid: ', error.message)
+  throw new Error('Invalid LangFuse Config: ', error.message)
 }
 
-const langfuseHandler = process.env.LANGFUSE_ENABLED ? new CallbackHandler(langfuseParams) : null
+const langfuseHandler = process.env.LANGFUSE_ENABLED ? new CallbackHandler(config) : null
 
 module.exports = {
   langfuseHandler
