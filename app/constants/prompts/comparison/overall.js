@@ -8,11 +8,11 @@ const overallPrompt = `
 
   Instructions:
   1. Compare the 2 JAFs, find key differences and score the similarity between them from 0 to 100 precent.
-  2. Create a nameless JSON object following the schema in [SCHEMA].
+  2. Create a JSON object following the schema in [SCHEMA].
   3. Provide a comprehensive summary of your reasoning for the similarity score and your findings.
 
   Output:
-  Return a JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
+  Return a nameless JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [JAF]
@@ -36,7 +36,7 @@ const overallPrompt = `
         "items": {{
           "type": "string",
         }},
-        "description": "Comprehensive list of key differences."
+        "description": "List of key differences."
       }},
       "summary": {{
         "type": "string",
