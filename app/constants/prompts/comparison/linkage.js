@@ -64,7 +64,6 @@ const linkagePrompt = `
           }}
         }},
         "required": ["task", "competencies"]
-
       }}
     }}
   }},
