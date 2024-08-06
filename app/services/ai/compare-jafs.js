@@ -1,8 +1,8 @@
 const { RunnableSequence } = require('@langchain/core/runnables')
 
+const chains = require('./chains/compare-chains')
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { addJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
-const chains = require('./chains/compare-chains')
 const { langfuseHandler } = require('../../config/langfuse')
 
 const buildJafObject = (jaf) => {

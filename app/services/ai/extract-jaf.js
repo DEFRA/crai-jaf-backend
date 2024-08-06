@@ -19,11 +19,8 @@ const splitText = (text) => {
 const getSummary = async (text) => {
   const mapChain = RunnableMap.from({
     details: chains.detailsChain,
-    summary_activities: chains.summaryActivitiesChain,
     job_summary: chains.jobSummaryChain,
     main_activities: chains.mainActivitiesChain,
-    key_responsibilities: chains.keyResponsibilitiesChain,
-    deliverables: chains.deliverablesChain,
     knowledge: chains.knowledgeChain,
     skills: chains.skillsChain
   })

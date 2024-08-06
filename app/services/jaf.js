@@ -1,7 +1,7 @@
 const { addJaf, getJafById } = require('../repos/jaf')
 const { extractJaf } = require('./ai/extract-jaf')
 
-const embedProps = ['job_summary', 'deliverables', 'knowledge', 'skills', 'key_responsibilities']
+const embedProps = ['job_summary', 'knowledge', 'skills']
 
 const storeJaf = async (jaf, contentType) => {
   const extracted = await extractJaf(jaf, contentType, { embedProps, chunk: true })
