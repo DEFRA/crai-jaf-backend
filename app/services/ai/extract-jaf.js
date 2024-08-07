@@ -4,7 +4,7 @@ const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 const { embeddings } = require('./clients/azure')
 const { readJaf } = require('../../lib/document-loader')
 const chains = require('./chains/extract-chains')
-const { langfuseHandler } = require('../../config/langfuse')
+const { langfuse } = require('../../config/langfuse')
 
 const splitText = (text) => {
   const splitter = new RecursiveCharacterTextSplitter({
@@ -30,7 +30,7 @@ const getSummary = async (text) => {
       jaf: text
     },
     {
-      callbacks: [langfuseHandler]
+      callbacks: [].concat(langfuse)
     })
 
   summary.knowledge = summary.knowledge.knowledge

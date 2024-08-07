@@ -21,8 +21,8 @@ if (err) {
   throw new Error('Invalid LangFuse Config: ', err.message)
 }
 
-const langfuseHandler = value.enabled ? new CallbackHandler(value) : null
+const handler = new CallbackHandler(value)
 
 module.exports = {
-  langfuseHandler
+  langfuse: value.enabled ? [handler] : []
 }

@@ -3,7 +3,7 @@ const { RunnableSequence } = require('@langchain/core/runnables')
 const chains = require('./chains/compare-chains')
 const { getJafById, getJafsByGrade } = require('../../repos/jaf')
 const { addJafComparison, getJafComparisons } = require('../../repos/jaf-comparison')
-const { langfuseHandler } = require('../../config/langfuse')
+const { langfuse } = require('../../config/langfuse')
 
 const buildJafObject = (jaf) => {
   return {
@@ -38,7 +38,7 @@ const compareJafs = async (baseJaf, comparedJaf) => {
       comparedJaf: JSON.stringify(buildJafObject(comparedJaf))
     },
     {
-      callbacks: [langfuseHandler]
+      callbacks: [].concat(langfuse)
     })
 
   return comparison
