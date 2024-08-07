@@ -3,10 +3,10 @@ const { extractJaf } = require('./ai/extract-jaf')
 
 const embedProps = ['job_summary', 'knowledge', 'skills']
 
-const storeJaf = async (jaf, contentType) => {
+const storeJaf = async (jaf, profession, contentType) => {
   const extracted = await extractJaf(jaf, contentType, { embedProps, chunk: true })
 
-  await addJaf(extracted)
+  await addJaf(extracted, profession)
 
   return extracted
 }

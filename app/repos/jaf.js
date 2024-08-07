@@ -1,6 +1,6 @@
 const { connection: knex } = require('../config/db')
 
-const addJaf = async (jaf) => {
+const addJaf = async (jaf, profession) => {
   const trx = await knex.transaction()
 
   try {
@@ -8,6 +8,7 @@ const addJaf = async (jaf) => {
       .returning('id')
       .insert({
         name: jaf.jafName,
+        profession,
         summary: jaf.summary
       })
 
@@ -36,10 +37,14 @@ const addJaf = async (jaf) => {
   }
 }
 
-const getJafs = async () => {
+const getJafs = async (query) => {
   try {
     const jafs = knex('jaf')
-      .select('id', 'name', 'summary')
+      .select('id', 'name', 'summary', 'profession')
+    
+    if (query.profession) {
+      jafs.where('profession', query.profession)
+    }
 
     return jafs
   } catch (err) {
