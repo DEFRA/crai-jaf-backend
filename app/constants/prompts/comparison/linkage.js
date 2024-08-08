@@ -11,7 +11,7 @@ const linkagePrompt = `
   2. Create a JSON object with arrays of of tasks and competencies.
 
   Output:
-  Return a JSON object containing the tasks and competencies arrays, strictly adhering to the schema in [SCHEMA].
+  Return a nameless JSON object containing the tasks and competencies arrays, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [TASKS]
@@ -64,7 +64,6 @@ const linkagePrompt = `
           }}
         }},
         "required": ["task", "competencies"]
-
       }}
     }}
   }},

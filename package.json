@@ -1,6 +1,6 @@
 {
   "name": "crai-jaf-backend",
-  "version": "0.1.9",
+  "version": "0.1.11",
   "description": "Backend for JAF PoC",
   "homepage": "github.com?owner=defra&repo=crai-jaf-backend&organization=defra",
   "main": "app/index.js",

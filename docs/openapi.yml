@@ -9,9 +9,9 @@ paths:
         - 'JAF Repository'
       summary: 'Get all JAFs stored in the repository'
       parameters:
-        - name: jafName
+        - name: profession
           in: query
-          description: 'The name of the JAF to search for'
+          description: 'The profession to filter JAFs by'
           required: false
           schema:
             type: string
@@ -48,6 +48,15 @@ paths:
             schema:
               type: string
               format: binary
+        headers:
+          Content-Type:
+            schema:
+              type: string
+              enum: [application/vnd.openxmlformats-officedocument.wordprocessingml.document]
+          x-profession:
+            schema:
+              type: string
+              description: 'The profession represented by the JAF'
       responses:
         '201':
           description: 'JAF stored successfully'
@@ -126,6 +135,23 @@ paths:
                     cosine:
                       type: number
                       description: 'Cosine similarity score between this JAF and chosen JAF'
+  /jaf/profession:
+    get:
+      tags:
+        - 'JAF Profession'
+      summary: 'Get all DDTS professions'
+      responses:
+        '200':
+          description: 'Professions retrieved successfully'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  description: 'DDTS profession'
+        '204':
+          description: 'No professions found in the repository'
 
 components:
   schemas:

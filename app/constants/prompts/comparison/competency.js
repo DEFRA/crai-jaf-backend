@@ -9,11 +9,11 @@ const competencyPrompt = `
   Instructions:
   1. Find similarities and differences between competencies in the base [JAF] and [COMPJAF].
   2. Focus your comparison on knowledge & skills, which in some roles will include communication, problem solving, decision making, autonomy and management of resources.
-  3. Create a JSON object following the schema in [SCHEMA].
+  3. Create a JSON array following the schema in [SCHEMA].
   4. Provide a comprehensive summary of your reasoning for your findings.
 
   Output:
-  Return a JSON object containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
+  Return a nameless JSON array containing comparison of the JAFs, strictly adhering to the schema in [SCHEMA].
   [/INST]
 
   [COMPETENCY_SCORING]

@@ -15,9 +15,11 @@ const buildChain = (prompt) => {
 const competencyChain = buildChain(prompts.competencyPrompt)
 const taskChain = buildChain(prompts.taskPrompt)
 const linkageChain = buildChain(prompts.linkagePrompt)
+const overallChain = buildChain(prompts.overallPrompt)
 
 module.exports = {
   competencyChain,
+  taskChain,
   linkageChain,
-  taskChain
+  overallChain
 }
