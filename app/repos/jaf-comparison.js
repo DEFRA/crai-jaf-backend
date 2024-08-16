@@ -36,13 +36,24 @@ const getJafComparison = async (baseJafId, comparedJafId) => {
 
 const getJafComparisons = async (baseJafId) => {
   try {
+    const missing = await knex('jaf')
+      .select({
+        id: 'id',
+        grade: knex.raw('summary->\'details\'->>\'grade\'')
+      })
+      .whereNotIn('id', knex('jaf_comparison').select('compared_jaf_id').where('base_jaf_id', baseJafId))
+      .whereRaw(knex.raw('summary->\'details\'->>\'grade\' = (SELECT summary->\'details\'->>\'grade\' FROM jaf WHERE id = ?)', [baseJafId]))
+      .pluck('id')
+    
+    console.log(missing)
+
     const comparisons = await knex('jaf_comparison')
       .leftJoin('jaf', 'jaf_comparison.compared_jaf_id', 'jaf.id')
       .select('*')
       .where('base_jaf_id', baseJafId)
       .orderBy(knex.raw('comparison_response->\'similarity_score\''), 'desc')
 
-    return comparisons
+    return { missing, comparisons }
   } catch (err) {
     console.log('Error fetching jaf comparisons: ', err)
     throw err

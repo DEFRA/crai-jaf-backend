@@ -18,7 +18,7 @@ const getConfig = () => {
     azureOpenAIApiVersion: aiConfig.apiVersion,
     azureOpenAIApiInstanceName: aiConfig.instanceName,
     onFailedAttempt,
-    verbose: true
+    // verbose: true
   }
 
   if (aiConfig.apiKey) {

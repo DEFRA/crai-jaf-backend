@@ -47,21 +47,25 @@ const compareJafs = async (baseJaf, comparedJaf) => {
 const generateJafComparison = async (jafId) => {
   const jaf = await getJafById(jafId)
 
-  const jafComparisons = await getJafComparisons(jafId)
+  const { missing, comparisons } = await getJafComparisons(jafId)
 
-  if (jafComparisons.length !== 0) {
-    return jafComparisons
+  if (missing.length === 0) {
+    return comparisons
   }
 
   const jafs = await getJafsByGrade(jaf.summary.details.grade)
 
-  for (const comparedJaf of jafs) {
+  const jafsToCompare = jafs.filter(j => missing.includes(j.id))
+
+  for (const comparedJaf of jafsToCompare) {
     const comparison = await compareJafs(jaf, comparedJaf)
 
     await addJafComparison(jafId, comparedJaf.id, comparison)
   }
 
-  return getJafComparisons(jafId)
+  const { comparisons: generated } = await getJafComparisons(jafId)
+
+  return generated
 }
 
 module.exports = {

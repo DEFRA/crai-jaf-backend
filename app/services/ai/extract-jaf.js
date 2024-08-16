@@ -64,6 +64,10 @@ const extractJaf = async (jaf, contentType, options) => {
 
     const embeddedChunks = []
 
+    if (!chunks) {
+      chunks = []
+    }
+
     for (const text of chunks) {
       const embedded = await embeddings.embedQuery(text)
       embeddedChunks.push({ embedded, text })
