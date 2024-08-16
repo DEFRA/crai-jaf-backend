@@ -4,7 +4,7 @@ const { RecursiveCharacterTextSplitter } = require('langchain/text_splitter')
 const { embeddings } = require('./clients/azure')
 const { readJaf } = require('../../lib/document-loader')
 const chains = require('./chains/extract-chains')
-const { langfuseHandler } = require('../../config/langfuse')
+const { langfuse } = require('../../config/langfuse')
 
 const splitText = (text) => {
   const splitter = new RecursiveCharacterTextSplitter({
@@ -19,11 +19,8 @@ const splitText = (text) => {
 const getSummary = async (text) => {
   const mapChain = RunnableMap.from({
     details: chains.detailsChain,
-    summary_activities: chains.summaryActivitiesChain,
     job_summary: chains.jobSummaryChain,
     main_activities: chains.mainActivitiesChain,
-    key_responsibilities: chains.keyResponsibilitiesChain,
-    deliverables: chains.deliverablesChain,
     knowledge: chains.knowledgeChain,
     skills: chains.skillsChain
   })
@@ -33,7 +30,7 @@ const getSummary = async (text) => {
       jaf: text
     },
     {
-      callbacks: [langfuseHandler]
+      callbacks: [].concat(langfuse)
     })
 
   summary.knowledge = summary.knowledge.knowledge
