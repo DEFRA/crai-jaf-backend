@@ -41,7 +41,7 @@ const getJafs = async (query) => {
   try {
     const jafs = knex('jaf')
       .select('id', 'name', 'summary', 'profession')
-    
+
     if (query.profession) {
       jafs.where('profession', query.profession)
     }

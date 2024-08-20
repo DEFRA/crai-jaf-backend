@@ -65,7 +65,7 @@ module.exports = [
       validate: {
         headers: Joi.object({
           'x-profession': Joi.string().required().valid(...Object.values(professions))
-        }).unknown(),
+        }).unknown()
       }
     },
     handler: async (request, h) => {
